@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Přesměrování na Discord</title>
+    <!-- Automatické přesměrování po 2 sekundách -->
+    <meta http-equiv="refresh" content="2;url=https://discord.gg/EQNjkvTpPs">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --card-bg: rgba(18, 24, 38, 0.75);
+            --accent-color: #5865F2;
+            --accent-glow: rgba(88, 101, 242, 0.35);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambientní efekty pozadí */
+        .glow-1, .glow-2 {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow-1 {
+            background: var(--accent-glow);
+            top: -10%;
+            left: -10%;
+        }
+
+        .glow-2 {
+            background: rgba(114, 137, 218, 0.15);
+            bottom: -10%;
+            right: -10%;
+        }
+
+        /* Hlavní karta */
+        .card {
+            position: relative;
+            z-index: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 440px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Logo / Ikona v kruzích */
+        .icon-wrapper {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-bg {
+            position: absolute;
+            inset: 0;
+            background: var(--accent-color);
+            opacity: 0.15;
+            border-radius: 20px;
+            transform: rotate(45deg);
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        .discord-icon {
+            width: 42px;
+            height: 42px;
+            fill: var(--accent-color);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Texty */
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        /* Progress loader */
+        .loader-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .loader-progress {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-color);
+            border-radius: 10px;
+            animation: load 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            box-shadow: 0 0 12px var(--accent-color);
+        }
+
+        /* Tlačítko pro manuální kliknutí */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            background: var(--accent-color);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border-radius: 14px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--accent-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover svg {
+            transform: translateX(3px);
+        }
+
+        /* Animace */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: rotate(45deg) scale(1); opacity: 0.15; }
+            50% { transform: rotate(45deg) scale(1.08); opacity: 0.25; }
+        }
+
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
+
+    <div class="card">
+        <div class="icon-wrapper">
+            <div class="icon-bg"></div>
+            <svg class="discord-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36">
+                <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0, -3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.95-72.15ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,45.92,53.87,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,45.92,96.1,53,91.08,65.69,84.69,65.69Z"/>
+            </svg>
+        </div>
+
+        <h1>Připojování k komunitě</h1>
+        <p>Za malý moment tě přesměrujeme přímo na náš Discord server...</p>
+
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+
+        <a href="https://discord.gg/EQNjkvTpPs" class="btn" id="redirect-btn">
+            <span>Vstoupit ihned</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+    </div>
+
+    <script>
+        // Okamžité JS přesměrování (záloha k meta refresh)
+        setTimeout(() => {
+            window.location.href = "https://discord.gg/EQNjkvTpPs";
+        }, 1800);
+    </script>
+</body>
+</html>
