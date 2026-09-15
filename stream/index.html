@@ -376,6 +376,7 @@
   const iframe = $("kickPlayer");
   const loader = $("loader");
   const playerError = $("playerError");
+  const playerErrorText = playerError.querySelector("p");
   const streamTitleEl = $("streamTitle");
   document.title = CONFIG.streamTitle + " — Live";
   streamTitleEl.textContent = CONFIG.streamTitle;
@@ -384,20 +385,48 @@
   let playerTimeout = null;
   let muted = true; // start muted: the only way autoplay is reliably allowed by browsers
 
+  function showPlayerError(message = "The player failed to load. Check your connection or try again."){
+    loader.classList.add("hide");
+    playerErrorText.textContent = message;
+    playerError.hidden = false;
+  }
+
   function kickSrc(){
     return "https://player.kick.com/" + encodeURIComponent(CONFIG.kickChannel) +
       "?autoplay=true&muted=" + (muted ? "true" : "false");
   }
 
-  function loadPlayer(){
+  async function fetchChannelStatus(){
+    try {
+      const res = await fetch(
+        "https://kick.com/api/v2/channels/" + encodeURIComponent(CONFIG.kickChannel),
+        { cache: "no-store" }
+      );
+      if (!res.ok) return null;
+
+      const data = await res.json();
+      return data && data.livestream ? "live" : "offline";
+    } catch (err) {
+      return null;
+    }
+  }
+
+  async function loadPlayer(){
     playerError.hidden = true;
     loader.classList.remove("hide");
-    iframe.src = kickSrc();
     clearTimeout(playerTimeout);
+
+    const channelStatus = await fetchChannelStatus();
+    if (channelStatus === "offline") {
+      iframe.removeAttribute("src");
+      showPlayerError("This stream is currently offline. Check back later.");
+      return;
+    }
+
+    iframe.src = kickSrc();
     playerTimeout = setTimeout(() => {
       // Player never finished loading (e.g. network issue) — surface a clear retry action
-      loader.classList.add("hide");
-      playerError.hidden = false;
+      showPlayerError();
     }, CONFIG.playerTimeoutMs);
   }
 
@@ -425,7 +454,7 @@
   // usually blocked), so this opens the real chat page in its own window —
   // that always works, an iframe here would just risk a blank box.
   $("chatBtn").addEventListener("click", () => {
-    const url = "https://kick.com/" + encodeURIComponent(CONFIG.kickChannel) + "/chatroom";
+    const url = "https://kick.com/popout" + encodeURIComponent(CONFIG.kickChannel) + "/chat";
     window.open(url, "kick-chat", "width=420,height=760,noopener,noreferrer");
   });
 

@@ -81,6 +81,11 @@
     box-shadow:0 12px 30px rgba(224,16,43,.35);
     margin-bottom:6px;
   }
+  .avatar img{
+    width:100%;height:100%;
+    border-radius:50%;
+    object-fit:cover;
+  }
   .name{font-size:clamp(1.7rem,6vw,2.3rem);text-align:center;}
   .handle{
     margin:0;color:var(--gold);font-weight:700;font-size:.95rem;
@@ -162,7 +167,7 @@
 <a class="back-btn" id="backBtn" href="#">← Server</a>
 
 <div class="card">
-  <div class="avatar" id="avatar">SC</div>
+  <div class="avatar" id="avatar"><img src="zlaticon.webp" alt="Sip of Cola TV avatar"></div>
   <h1 class="name" id="displayName">Sip of Cola TV</h1>
   <p class="handle" id="handle">aka Zlators</p>
   <p class="tagline" id="tagline">Live streams, clips &amp; community</p>
@@ -246,7 +251,6 @@
   /* ========================================================= */
   const $ = (id) => document.getElementById(id);
   document.title = CONFIG.displayName + " — Links";
-  $("avatar").textContent = CONFIG.avatarInitials;
   $("displayName").textContent = CONFIG.displayName;
   $("handle").textContent = CONFIG.handle;
   $("tagline").textContent = CONFIG.tagline;
