@@ -454,7 +454,7 @@
   // usually blocked), so this opens the real chat page in its own window —
   // that always works, an iframe here would just risk a blank box.
   $("chatBtn").addEventListener("click", () => {
-    const url = "https://kick.com/popout" + encodeURIComponent(CONFIG.kickChannel) + "/chat";
+    const url = "https://kick.com/popout/" + encodeURIComponent(CONFIG.kickChannel) + "/chat";
     window.open(url, "kick-chat", "width=420,height=760,noopener,noreferrer");
   });
 
