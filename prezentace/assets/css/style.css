@@ -1,0 +1,2054 @@
+/* ============================================================
+   GLADOR PREZENTACJA - Main Stylesheet
+   Layout dimensions are injected as CSS custom properties
+   from layout_config.php via the page <head>.
+   ============================================================ */
+
+/* --- Local Fonts: Amiri --- */
+@font-face {
+    font-family: 'Amiri';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/amiri-regular.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Amiri';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/amiri-italic.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Amiri';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../fonts/amiri-bold.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Amiri';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../fonts/amiri-bolditalic.woff2') format('woff2');
+}
+
+/* --- CSS Variables (colors & fonts only â€” layout from PHP) --- */
+:root {
+    --color-bg:         #0d0a08;
+    --color-bg-dark:    #000000;
+    --color-text:       #ffd164;
+    --color-text-muted: #c89e72;
+    --color-gold:       #ffcc8d;
+    --color-gold-dark:  #c8996d;
+    --color-border:     #92764f;
+    --color-accent:     #e74c3c;
+    --color-link:       #f7b77b;
+    --color-green:      #5cb85c;
+    --color-red:        #d9534f;
+    --color-title:      #f76900;
+    --font-heading:     'Amiri', Cambria, serif;
+    --font-body:        Verdana, 'Tahoma', sans-serif;
+}
+
+/* ============================================================
+   PSD Text Effect (Photoshop Bevel / Inner Glow / Shadow)
+   ============================================================ */
+.text-psd {
+    color: var(--color-text);
+    -webkit-text-stroke: 1.5px #000;
+    paint-order: stroke fill;
+    text-shadow:
+        0 3px 3px rgba(0, 0, 0, 0.89),
+        0 3px 10px rgba(0, 0, 0, 0.6),
+        0 1px 2px rgba(0, 0, 0, 0.95),
+        0 0 4px rgba(0, 0, 0, 1),
+        0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================================
+   RESET
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; height: auto; }
+
+body {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-text);
+    background: var(--color-bg-dark) url('../img/bg.jpg') center top / cover no-repeat fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ============================================================
+   SECTION BACKGROUND PATTERNS (cycling bg_sekcja_1/2/3)
+   ============================================================ */
+.section-wrapper {
+    position: relative;
+}
+.section-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    /* Break out of .full-content to fill the entire .full-main width */
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    z-index: 0;
+    pointer-events: none;
+    /* repeat: tile both axes at natural size (1920x902 jpg).
+       Short sections clip the image from the bottom – no ugly squish.
+       Tall sections tile seamlessly (new jpgs designed for smooth repeat). */
+    background-repeat: repeat;
+    background-position: left top;
+    background-size: 1920px auto;
+    /* Fallback color in case the tile doesn't fully cover */
+    background-color: #080604;
+}
+.section-wrapper > * {
+    position: relative;
+    z-index: 1;
+}
+.section-bg-1::before { background-image: url('../img/bg_sekcja_1.jpg'); top: -30px; bottom: 0px; }
+.section-bg-2::before { background-image: url('../img/bg_sekcja_2.jpg'); top: -45px; bottom: 10px; }
+.section-bg-3::before { background-image: url('../img/bg_sekcja_3.jpg'); top: -44px; bottom: 0px; }
+/* First section: top=-120px (tall header), bottom=15px (trim 15px from bottom) */
+.section-first.section-bg-1::before { top: -120px; bottom: 15px; }
+
+/* ============================================================
+   LAYOUT:  sidebar | divider | main content
+   ============================================================ */
+.app-full {
+    display: flex;
+    align-items: stretch;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* --- Left Sidebar (percentage of viewport like Glevia's 20%) --- */
+.full-left {
+    width: var(--sidebar-width-vw);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    background:url('../img/left_hamburger/bg_left_hamburger.png') right top no-repeat;
+    background-size: cover;
+    overflow: hidden;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Sidebar scrollbar */
+.full-left::-webkit-scrollbar { width: 6px; }
+.full-left::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 3px; }
+.full-left::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+
+/* --- Vertical Divider (fixed to viewport right, vw-based) --- */
+.sidebar-divider {
+    position: fixed;
+    right: var(--divider-right);
+    top: 0;
+    width: var(--divider-width);
+    height: 100vh;
+    background: url('../img/left_hamburger/right_pionowy_dzielnik.png') center top no-repeat;
+    background-size: auto;
+    transform: translateX(-25px);
+    z-index: 99;
+    pointer-events: none;
+}
+
+/* --- Main Content Area --- */
+.full-main {
+    flex: 1;
+    min-width: 0;
+    transform: translateX(-8px);
+    margin-right: calc(var(--divider-right) + var(--divider-width));
+    overflow-x: clip;  /* clip instead of hidden â€” doesn't create scroll container */
+}
+
+/* --- Content Wrapper --- */
+.full-content {
+    width: var(--content-max-width);
+    max-width: 100%;
+    margin: 0 auto;
+    padding: var(--content-padding);
+    padding-bottom: 0;    /* no bottom padding â€” section-last bg handles it */
+    text-align: center;
+}
+
+/* Content images must scale down */
+.full-main img {
+    height: auto;
+}
+
+/* ============================================================
+   PAGE HEADER (bg_header.png = 1920Ă—547)
+   ============================================================ */
+.page-header {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1920 / 547;
+    background: url('../img/bg_header.png') center top / cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.page-header .header-logo {
+    max-height: 60%;
+    max-width: 80%;
+    filter: drop-shadow(0 4px 15px rgba(0,0,0,0.6));
+    transition: transform 0.35s ease, filter 0.35s ease;
+}
+.page-header .header-logo:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 6px 25px rgba(255,200,100,0.35));
+}
+
+/* ============================================================
+   MAIN TITLE BAR (duza_belka_pozioma 1920Ă—192)
+   ============================================================ */
+.main-title-bar {
+    width: 100%;
+    position: relative;
+    aspect-ratio: 1920 / 192;
+    margin-top: -3.125vw;
+    z-index: 2;
+    background: url('../img/duza_belka_pozioma_z_miejscem_na_tekst_po_srodku.png') center center / cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-title-bar .title-text {
+    font-family: var(--font-heading);
+    font-size: var(--title-font-size);
+    font-weight: 700;
+    transform: translateY(var(--title-text-offset-y));
+}
+
+/* ============================================================
+   SIDEBAR: Navigation Container
+   top position = 28.5% of sidebar (100vh) = consistent Y at any zoom
+   height = 55% of sidebar = buttons always fit the same visual area
+   ============================================================ */
+.nav-container {
+    width: 75%;
+    margin: 28.5vh auto 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5vh;
+    max-height: calc(100vh - 28.5vh - 10vh);
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-shrink: 1;
+    padding-right: 4px;
+}
+
+/* Modern scrollbar â€” scales proportionally with buttons */
+.nav-container::-webkit-scrollbar {
+    width: clamp(4px, 0.35vw, 7px);
+}
+.nav-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+}
+.nav-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(180,140,80,0.7), rgba(120,85,40,0.6));
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+.nav-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(210,170,100,0.9), rgba(150,110,55,0.8));
+}
+/* Firefox scrollbar */
+.nav-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(180,140,80,0.6) rgba(0,0,0,0.25);
+}
+
+/* ============================================================
+   SIDEBAR: Nav Buttons (button_category 396Ă—74)
+   Centered, width 100% of nav-container, scales with sidebar.
+   background-size:contain keeps aspect ratio like Glevia.
+   ============================================================ */
+.nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 396 / 74;
+    flex-shrink: 0;
+    background: url('../img/left_hamburger/button_category_normal.png') center / contain no-repeat;
+    cursor: pointer;
+    transition: filter 0.15s;
+}
+.nav-btn:hover {
+    background-image: url('../img/left_hamburger/button_category_hover.png');
+    filter: brightness(110%);
+}
+.nav-btn.active {
+    background-image: url('../img/left_hamburger/button_category_hover.png');
+    filter: brightness(120%);
+}
+
+.nav-btn span {
+    font-family: var(--font-heading);
+    font-size: clamp(7px, 0.72vw, 14px);
+    font-weight: 600;
+    position: relative;
+    top: 2px;
+    display: inline-block;
+    transition: 0.2s;
+    white-space: nowrap;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* PSD text on nav buttons (CSS fallback â€” hidden when PixiJS is active) */
+.nav-btn span::before {
+    font-family: var(--font-heading);
+    content: attr(data-text);
+    -webkit-text-stroke: 1.5px #000;
+    color: transparent;
+    text-shadow: none;
+}
+.nav-btn span::after {
+    font-family: var(--font-heading);
+    content: attr(data-text);
+    left: 0;
+    top: 0;
+    position: absolute;
+    color: var(--color-text);
+    -webkit-text-stroke: 1.5px #000;
+    paint-order: stroke fill;
+    text-shadow:
+        0 3px 3px rgba(0, 0, 0, 0.89),
+        0 3px 10px rgba(0, 0, 0, 0.6),
+        0 1px 2px rgba(0, 0, 0, 0.95),
+        0 0 4px rgba(0, 0, 0, 1),
+        0 2px 6px rgba(0, 0, 0, 0.8);
+    -webkit-text-fill-color: var(--color-text);
+}
+
+/* When PixiJS replaces text, hide CSS pseudo-elements / original text */
+.nav-btn span.pixi-replaced::before,
+.nav-btn span.pixi-replaced::after {
+    content: none !important;
+    display: none !important;
+}
+.pixi-replaced {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-text-stroke: 0 !important;
+    text-shadow: none !important;
+}
+
+/* ============================================================
+   SIDEBAR: Decoration below last button (206Ă—77)
+   ============================================================ */
+.dekor-after-nav {
+    width: 45%;
+    aspect-ratio: 206 / 77;
+    margin-top: 2px;
+    background: url('../img/left_hamburger/dekor_pod_ostatnim_przyciskiem_category.png') center / contain no-repeat;
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   SIDEBAR: Social Buttons (91Ă—97 each)
+   ============================================================ */
+.full-social {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 5px 0;
+    display: flex;
+    gap: clamp(4px, 0.26vw, 8px);
+    justify-content: center;
+    align-items: center;
+}
+.full-social a {
+    display: inline-block;
+    transition: transform 0.2s;
+}
+.full-social a:hover {
+    transform: scale(1.1);
+}
+.full-social img {
+    width: clamp(41px, var(--social-size-vw), 75px);
+    height: auto;
+}
+
+/* ============================================================
+   MOBILE: Hamburger & top bar
+   ============================================================ */
+.mobile {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    width: 100%;
+    justify-content: space-between;
+    padding: 15px;
+    align-items: center;
+    background: var(--color-bg-dark);
+    border-bottom: 1px solid #535255;
+}
+.mobile .mobile-logo {
+    height: 50px;
+    width: auto;
+}
+.mobile .hamburger {
+    background: #211e23;
+    height: 48px;
+    padding: 15px 8px;
+    min-width: 48px;
+    max-width: 48px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.mobile .hamburger > span {
+    background: #888;
+    border-radius: 2px;
+    display: block;
+    height: 3px;
+    width: 30px;
+    margin-bottom: 4px;
+    transition: all 0.4s;
+}
+
+/* ============================================================
+   HEADINGS: With background decorations
+   ============================================================ */
+
+/* H2 graphic = belka_separacyjna_tresci_z_miejscem_na_tekst (1034Ă—143) */
+h2.section-heading {
+    background-image: url('../img/belka_separacyjna_tresci_z_miejscem_na_tekst.png');
+    background-repeat: no-repeat;
+    background-size: var(--h2-width) var(--h2-height);
+    background-position: center;
+    text-align: center;
+    width: var(--h2-width);
+    max-width: 100%;
+    height: var(--h2-height);
+    font-size: var(--h2-font-size);
+    padding: 0;
+    margin: 30px auto 15px;
+    scroll-margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+h2.section-heading > span {
+    transform: translateY(var(--h2-text-offset-y));
+}
+
+/* H2 text fallback = belka_mala_na_tekst (482Ă—111) */
+h2.section-heading-text {
+    background-image: url('../img/belka_mala_na_tekst.png');
+    background-repeat: no-repeat;
+    background-size: var(--h2text-width) var(--h2text-height);
+    background-position: center;
+    text-align: center;
+    width: var(--h2text-width);
+    max-width: 100%;
+    height: var(--h2text-height);
+    font-family: var(--font-heading);
+    font-size: var(--h2text-font-size);
+    margin: 30px auto 15px;
+    padding: 0;
+    scroll-margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+h2.section-heading-text > span {
+    transform: translateY(var(--h2text-text-offset-y));
+}
+
+/* H3 = belka_duza_na_tekst (482Ă—111) */
+h3.sub-heading {
+    background-image: url('../img/belka_duza_na_tekst.png');
+    background-repeat: no-repeat;
+    background-size: var(--h3-width) var(--h3-height);
+    background-position: center;
+    text-align: center;
+    width: var(--h3-width);
+    max-width: 100%;
+    height: var(--h3-height);
+    font-size: var(--h3-font-size);
+    padding: 0;
+    margin: 20px auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+h3.sub-heading > span {
+    transform: translateY(var(--h3-text-offset-y));
+}
+
+/* H4 = belka_srednia_na_tekst (482Ă—111) */
+h4.sub-heading {
+    background-image: url('../img/belka_srednia_na_tekst.png');
+    background-repeat: no-repeat;
+    background-size: var(--h4-width) var(--h4-height);
+    background-position: center;
+    text-align: center;
+    width: var(--h4-width);
+    max-width: 100%;
+    height: var(--h4-height);
+    font-size: var(--h4-font-size);
+    padding: 0;
+    margin: 15px auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+h4.sub-heading > span {
+    transform: translateY(var(--h4-text-offset-y));
+}
+
+/* H3/H4 text fallbacks */
+h3.sub-heading-text, h4.sub-heading-text {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    text-align: center;
+    margin: 20px auto 10px;
+    padding: 5px 0;
+}
+
+/* All headings share the PSD text style */
+h2.section-heading,
+h3.sub-heading,
+h4.sub-heading,
+h2.section-heading-text,
+h3.sub-heading-text,
+h4.sub-heading-text {
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    -webkit-text-stroke: 1.5px #000;
+    paint-order: stroke fill;
+    text-shadow:
+        0 3px 3px rgba(0, 0, 0, 0.89),
+        0 3px 10px rgba(0, 0, 0, 0.6),
+        0 1px 2px rgba(0, 0, 0, 0.95),
+        0 0 4px rgba(0, 0, 0, 1),
+        0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================================
+   SEPARATORS (PNG decorative lines between sections)
+   ============================================================ */
+.separator {
+    display: block;
+    margin: 20px auto;
+    max-width: 100%;
+    height: auto;
+}
+.separator-small  {
+    max-width: none;
+    min-width: 1400px;
+    margin-left: calc(-1 * var(--sidebar-width) * 0.6);
+    margin-right: 0;
+}
+.separator-medium { max-width: var(--sep-medium-width); }
+.separator-large  { max-width: var(--sep-medium-width); }
+.separator-xl     { max-width: 100%; }
+
+/* Last section: no separator, bg extends to bottom edge */
+.section-last {
+    position: relative;
+    padding-bottom: 60px;  /* breathing room after content */
+}
+.section-last::before {
+    top: -44px !important;    /* close gap with section above */
+    bottom: 0px !important;
+}
+
+/* ============================================================
+   CONTENT TYPOGRAPHY
+   ============================================================ */
+.full-main p,
+.full-main li {
+    font-size: 14px;
+    line-height: 1.7;
+}
+.full-main ul:not(.text-left),
+.full-main ol:not(.text-left) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ============================================================
+   DASH LIST (Lista od myślnika)
+   ============================================================ */
+.dash-list-block {
+    margin: 20px auto;
+}
+.dash-list-center { text-align: center; }
+.dash-list-left { text-align: left; }
+.dash-list-right { text-align: right; }
+.dash-list-inner {
+    display: inline-block;
+    text-align: left;
+}
+.dash-list-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.dash-list-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    image-rendering: pixelated;
+}
+.dash-list-text {
+    font-size: 20px;
+    color: #ff9c53;
+    line-height: 44px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-gold { color: var(--color-gold); }
+.text-accent { color: var(--color-accent); }
+.text-muted { color: var(--color-text-muted); }
+
+.font-cambria { font-family: Cambria, var(--font-heading); }
+.font-lg { font-size: 18px; }
+.font-xl { font-size: 22px; }
+
+/* ============================================================
+   AUTO-FRAME for images â€” 9-slice ornamental border
+   Uses ramka_delikatna images (corners 98Ă—86, deco 194Ă—41)
+   ============================================================ */
+.auto-frame {
+    display: inline-block;
+    vertical-align: top;
+    margin: 10px 5px;
+    max-width: 100%;
+    /* Frame dimensions from ramka_delikatna assets */
+    --frame-corner-w: 98px;
+    --frame-corner-h: 86px;
+    --frame-deco-w: 194px;
+    --frame-deco-h: 41px;
+    /* Frame overlaps content — compensate so outer size stays tight */
+    --frame-overlap: 78px;
+}
+
+.frame-row {
+    display: flex;
+    align-items: stretch;
+}
+
+/* Top/bottom rows shifted inward to overlap content */
+.frame-row.frame-top {
+    margin-bottom: calc(-1 * var(--frame-overlap));
+    position: relative;
+    z-index: 3;
+}
+.frame-row.frame-bottom {
+    margin-top: calc(-1 * var(--frame-overlap));
+    position: relative;
+    z-index: 3;
+}
+
+/* --- Corners --- */
+.frame-corner {
+    flex-shrink: 0;
+    width: var(--frame-corner-w);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    image-rendering: auto;
+}
+.frame-corner.tl { background-image: url('../img/ramka_delikatna/lewy_gorny_rog.png'); }
+.frame-corner.tr { background-image: url('../img/ramka_delikatna/prawy_gorny_rog.png'); }
+.frame-corner.bl { background-image: url('../img/ramka_delikatna/lewy_dolny_rog.png'); }
+.frame-corner.br { background-image: url('../img/ramka_delikatna/prawy_dolny_rog.png'); }
+
+.frame-row.frame-top .frame-corner,
+.frame-row.frame-bottom .frame-corner {
+    height: var(--frame-corner-h);
+}
+
+/* --- Edges (repeating strips) --- */
+.frame-edge {
+    flex: 1;
+    background-repeat: repeat-x;
+    background-size: auto 100%;
+    position: relative;
+}
+.frame-edge.top    { background-image: url('../img/ramka_delikatna/gorna_linia.png');  height: var(--frame-corner-h); }
+.frame-edge.bottom { background-image: url('../img/ramka_delikatna/dolna_linia.png');  height: var(--frame-corner-h); }
+.frame-edge.left   { background-image: url('../img/ramka_delikatna/lewa_linia.png');   background-repeat: repeat-y; background-size: 100% auto; width: var(--frame-corner-w); flex: 0 0 auto; margin-right: calc(-1 * var(--frame-overlap)); position: relative; z-index: 2; }
+.frame-edge.right  { background-image: url('../img/ramka_delikatna/prawa_linia.png');  background-repeat: repeat-y; background-size: 100% auto; width: var(--frame-corner-w); flex: 0 0 auto; margin-left: calc(-1 * var(--frame-overlap)); position: relative; z-index: 2; }
+
+/* --- Center decoration on top/bottom edges --- */
+.frame-deco {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    pointer-events: none;
+    z-index: 2;
+}
+.frame-deco.top {
+    background-image: url('../img/ramka_delikatna/dekor_gornej_i_dolnej_belki.png');
+    width: var(--frame-deco-w);
+    height: var(--frame-deco-h);
+    top: -11px;
+}
+.frame-deco.bottom {
+    background-image: url('../img/ramka_delikatna/dekor_gornej_i_dolnej_belki.png');
+    width: var(--frame-deco-w);
+    height: var(--frame-deco-h);
+    bottom: -5px;
+    top: auto;
+}
+
+/* --- Content cell --- */
+.frame-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 2px extra padding top/bottom so content doesn't poke outside the frame */
+    padding: 2px 0;
+}
+.frame-content img,
+.frame-content video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    /* Override old editor inline styles (display:block; margin:10px auto)
+       that could interfere with flex layout and cause frame to stretch */
+    margin: 0 !important;
+}
+/* Hide default browser video controls/overlays */
+.full-content video::-webkit-media-controls {
+    display: none !important;
+}
+.full-content video::-webkit-media-controls-enclosure {
+    display: none !important;
+}
+.full-content video {
+    pointer-events: none;
+}
+
+/* --- Glow variant --- */
+.auto-frame.frame-glow {
+    filter: drop-shadow(0 0 15px rgba(255,204,141,0.2));
+}
+
+/* --- Fallback --- */
+@supports not (background-image: url('test')) {
+    .auto-frame {
+        border: 2px solid var(--color-border);
+        padding: 4px;
+        background: rgba(0,0,0,0.4);
+    }
+}
+
+/* ============================================================
+   SPOILER Box
+   ============================================================ */
+.spoiler-box {
+    margin: 15px auto;
+    max-width: 800px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.spoiler-header {
+    background: rgba(0,0,0,0.5);
+    padding: 10px 15px;
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: 16px;
+    color: var(--color-gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+.spoiler-header:hover {
+    background: rgba(0,0,0,0.7);
+}
+.spoiler-header::after {
+    content: '\25BC';
+    font-size: 12px;
+    transition: transform 0.3s;
+}
+.spoiler-box.open .spoiler-header::after {
+    transform: rotate(180deg);
+}
+.spoiler-content {
+    display: none;
+    padding: 15px;
+    background: rgba(0,0,0,0.3);
+}
+.spoiler-box.open .spoiler-content {
+    display: block;
+}
+
+/* ============================================================
+   GRID: 3-column item boxes
+   ============================================================ */
+.grid-box-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin: 20px auto;
+    max-width: 100%;
+}
+.grid-item {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(146,118,79,0.3);
+    border-radius: 4px;
+    padding: 15px;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+.grid-item:hover {
+    border-color: var(--color-border);
+}
+.grid-item-img {
+    margin-bottom: 10px;
+}
+.grid-item-img img {
+    max-height: 64px;
+    image-rendering: pixelated;
+}
+.grid-item-content {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* ---- Media + Text Block ---- */
+.media-text-block {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    max-width: 900px;
+    margin: 15px auto;
+}
+.media-text-block.layout-media-left { flex-direction: row; }
+.media-text-block.layout-media-right { flex-direction: row; }
+.media-text-block.layout-media-top { flex-direction: column; }
+
+.media-text-media {
+    flex: 0 0 auto;
+    max-width: 50%;
+}
+.media-text-media img,
+.media-text-media video {
+    border-radius: 4px;
+}
+.media-text-content {
+    flex: 1 1 0%;
+    min-width: 0;
+}
+
+@media (max-width: 768px) {
+    .media-text-block {
+        flex-direction: column !important;
+    }
+    .media-text-media {
+        max-width: 100%;
+    }
+    .grid-box-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 480px) {
+    .grid-box-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.content-table {
+    width: 100%;
+    max-width: 800px;
+    margin: 15px auto;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.content-table th,
+.content-table td {
+    padding: 8px 12px;
+    border: 1px solid rgba(146,118,79,0.3);
+    vertical-align: middle;
+}
+.content-table th {
+    background: rgba(0,0,0,0.5);
+    color: var(--color-gold);
+    font-family: var(--font-heading);
+    font-weight: 600;
+}
+.content-table tr:nth-child(even) {
+    background: rgba(255,255,255,0.03);
+}
+.content-table tr:hover {
+    background: rgba(146,118,79,0.08);
+}
+
+/* ============================================================
+   TABLE GRID STYLES
+   ============================================================ */
+
+/* --- Shared grid table defaults --- */
+table[class*="grid-"] {
+    width: 100%;
+    max-width: 900px;
+    margin: 20px auto;
+    font-size: 14px;
+    color: #d4c4a0;
+}
+table[class*="grid-"] img {
+    vertical-align: middle;
+    image-rendering: pixelated;
+    border-radius: 0 !important;
+}
+table[class*="grid-"] .item-icon-cell img {
+    width: 32px; height: 32px; display: inline-block;
+}
+table[class*="grid-"] .mat-icon {
+    width: 24px; height: 24px; display: inline-block; vertical-align: middle; margin: 0 2px;
+}
+
+/* --- Style A: ZĹ‚ota ramka (Gold Frame) --- */
+table.grid-gold {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #8b6914;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #0c0804;
+    box-shadow: 0 0 16px rgba(139,105,20,0.25), inset 0 0 30px rgba(0,0,0,0.5);
+}
+table.grid-gold th,
+table.grid-gold td {
+    padding: 10px 14px;
+    border: 1px solid rgba(139,105,20,0.35);
+    vertical-align: middle;
+    text-align: center;
+}
+table.grid-gold thead {
+    background: linear-gradient(180deg, #1e1408, #0e0a04);
+}
+table.grid-gold th {
+    color: #f0d87a;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+    border-bottom: 2px solid #8b6914;
+    background: transparent;
+}
+table.grid-gold td {
+    color: #c8b080;
+    background: rgba(12,8,4,0.7);
+}
+table.grid-gold tr:nth-child(even) td {
+    background: rgba(20,14,6,0.8);
+}
+table.grid-gold tr:last-child td { border-bottom: none; }
+table.grid-gold tr:hover td {
+    background: rgba(139,105,20,0.1);
+}
+
+/* --- Style B: Dark Inventory (ciemny ekwipunek) --- */
+table.grid-inventory {
+    border-collapse: collapse;
+    background: #0a0706;
+    border: 1px solid #3a2a18;
+    box-shadow: 0 0 12px rgba(0,0,0,0.6);
+}
+table.grid-inventory th,
+table.grid-inventory td {
+    padding: 8px 12px;
+    border: 1px solid #2a1e10;
+    vertical-align: middle;
+    text-align: center;
+}
+table.grid-inventory th {
+    background: #141008;
+    color: #d4a060;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 2px solid #3a2a18;
+    text-shadow: 0 1px 2px #000;
+}
+table.grid-inventory td {
+    color: #a89070;
+    background: #0d0906;
+}
+table.grid-inventory tr:nth-child(even) td {
+    background: #100c08;
+}
+table.grid-inventory tr:last-child td { border-bottom: none; }
+table.grid-inventory tr:hover td {
+    background: rgba(60,44,24,0.25);
+}
+
+/* --- Style C: Pergamin (Parchment) --- */
+table.grid-parchment {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 2px solid #6b5830;
+    border-radius: 3px;
+    background: #14100a;
+    box-shadow: 0 0 10px rgba(107,88,48,0.15);
+}
+table.grid-parchment th,
+table.grid-parchment td {
+    padding: 10px 14px;
+    border: 1px solid rgba(107,88,48,0.3);
+    vertical-align: middle;
+    text-align: center;
+}
+table.grid-parchment th {
+    background: url('../img/belka_mala_na_tekst.png') center / cover no-repeat, #14100a;
+    color: #ffe8a0;
+    font-weight: 700;
+    font-size: 14px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+    padding: 14px;
+    border-bottom: 2px solid #6b5830;
+}
+table.grid-parchment td {
+    color: #c0a878;
+    background: rgba(20,16,10,0.8);
+}
+table.grid-parchment tr:nth-child(even) td {
+    background: rgba(28,22,12,0.8);
+}
+table.grid-parchment tr:last-child td { border-bottom: none; }
+table.grid-parchment tr:hover td {
+    background: rgba(107,88,48,0.08);
+}
+
+/* --- Style D: Metin2 Board (9-slice frame) --- */
+table.grid-board {
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: none;
+    background:
+        url('../img/game_board/board_corner_lefttop.png') 0 0 no-repeat,
+        url('../img/game_board/board_corner_righttop.png') right 0 no-repeat,
+        url('../img/game_board/board_corner_leftbottom.png') 0 bottom no-repeat,
+        url('../img/game_board/board_corner_rightbottom.png') right bottom no-repeat,
+        url('../img/game_board/board_line_top.png') 32px 0 no-repeat,
+        url('../img/game_board/board_line_bottom.png') 32px bottom no-repeat,
+        url('../img/game_board/board_line_left.png') 0 32px no-repeat,
+        url('../img/game_board/board_line_right.png') right 32px no-repeat,
+        url('../img/game_board/board_base.png') 32px 32px repeat;
+    background-size:
+        32px 32px, 32px 32px, 32px 32px, 32px 32px,
+        calc(100% - 64px) 32px, calc(100% - 64px) 32px,
+        32px calc(100% - 64px), 32px calc(100% - 64px),
+        96px 96px;
+    padding: 4px;
+}
+table.grid-board th,
+table.grid-board td {
+    padding: 10px 14px;
+    border: 1px solid rgba(80,60,30,0.3);
+    vertical-align: middle;
+    text-align: center;
+}
+table.grid-board th {
+    background: rgba(0,0,0,0.35);
+    color: #ffab09;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    letter-spacing: 0.5px;
+}
+table.grid-board td {
+    color: #c8b080;
+    background: rgba(0,0,0,0.2);
+}
+table.grid-board tr:nth-child(even) td {
+    background: rgba(0,0,0,0.3);
+}
+table.grid-board tr:last-child td { border-bottom: none; }
+table.grid-board tr:hover td {
+    background: rgba(255,171,9,0.06);
+}
+
+/* --- Style E: Ciemny minimalistyczny (Dark Minimal) --- */
+table.grid-dark {
+    border-collapse: collapse;
+    background: #08060a;
+    border: 1px solid #222;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+table.grid-dark th,
+table.grid-dark td {
+    padding: 10px 14px;
+    border: 1px solid #1a1a22;
+    vertical-align: middle;
+    text-align: center;
+}
+table.grid-dark th {
+    background: #0e0c12;
+    color: #8888cc;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-bottom: 2px solid #2a2a40;
+}
+table.grid-dark td {
+    color: #9090a0;
+    background: #0a0810;
+}
+table.grid-dark tr:nth-child(even) td {
+    background: #0c0a14;
+}
+table.grid-dark tr:last-child td { border-bottom: none; }
+table.grid-dark tr:hover td {
+    background: rgba(100,100,180,0.06);
+}
+
+/* --- Nowoczesny Smoczy Ogien --- */
+table.grid-dragon-fire {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #0c0200;
+    border: 2px solid #571701;
+    border-radius: 8px;
+    box-shadow: 0 4px 25px rgba(255, 69, 0, 0.4), inset 0 0 10px rgba(255, 69, 0, 0.1);
+    overflow: hidden;
+}
+table.grid-dragon-fire th, table.grid-dragon-fire td {
+    padding: 12px 18px;
+    border-bottom: 1px solid rgba(255, 69, 0, 0.2);
+    border-right: 1px solid rgba(255, 69, 0, 0.1);
+    vertical-align: middle;
+    text-align: center;
+    color: #ffebd1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+table.grid-dragon-fire th {
+    background: linear-gradient(180deg, #420d03 0%, #170401 100%);
+    color: #ff8c00;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #ff4500;
+    text-shadow: 0 0 5px rgba(255, 140, 0, 0.5);
+    font-family: Georgia, serif;
+}
+table.grid-dragon-fire tr:last-child td { border-bottom: none; }
+table.grid-dragon-fire td:last-child, table.grid-dragon-fire th:last-child { border-right: none; }
+table.grid-dragon-fire tr:hover td { background: rgba(255, 69, 0, 0.1); box-shadow: inset 0 0 10px rgba(255, 69, 0, 0.2); }
+
+/* --- Nowoczesny Zloty Wiek --- */
+table.grid-dragon-gold {
+    border-collapse: collapse;
+    background: #121008;
+    border: 1px solid #d4af37;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.8), inset 0 0 12px rgba(212, 175, 55, 0.15);
+    border-radius: 4px;
+    overflow: hidden;
+}
+table.grid-dragon-gold th, table.grid-dragon-gold td {
+    padding: 14px 20px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    vertical-align: middle;
+    text-align: center;
+    color: #e8dcc3;
+}
+table.grid-dragon-gold th {
+    background: rgba(212, 175, 55, 0.08);
+    color: #ffd700;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    border-bottom: 2px solid #d4af37;
+}
+table.grid-dragon-gold tr:nth-child(even) td { background: rgba(212, 175, 55, 0.02); }
+table.grid-dragon-gold tr:hover td { background: rgba(212, 175, 55, 0.08); color: #fff; text-shadow: 0 0 8px rgba(212, 175, 55, 0.6); }
+
+/* --- Nowoczesna Krwawa Luska --- */
+table.grid-dragon-blood {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #0a0000;
+    border: 1px solid #520000;
+    border-radius: 6px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.9), inset 0 0 8px rgba(139, 0, 0, 0.5);
+}
+table.grid-dragon-blood th, table.grid-dragon-blood td {
+    padding: 13px 18px;
+    border-bottom: 1px solid #330000;
+    vertical-align: middle;
+    text-align: center;
+    color: #ffcccc;
+}
+table.grid-dragon-blood th {
+    background: #260000;
+    color: #ff3333;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-bottom: 2px solid #8b0000;
+}
+table.grid-dragon-blood tr:last-child td { border-bottom: none; }
+table.grid-dragon-blood tr:hover td { background: rgba(139, 0, 0, 0.2); }
+
+/* --- Nowoczesny Magmowy --- */
+table.grid-dragon-magma {
+    border-collapse: collapse;
+    background: #141416;
+    border: 2px solid #2e2e2e;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+}
+table.grid-dragon-magma th, table.grid-dragon-magma td {
+    padding: 15px 22px;
+    border-bottom: 2px solid #2e2e2e;
+    vertical-align: middle;
+    text-align: center;
+    color: #b0b0b0;
+}
+table.grid-dragon-magma th {
+    background: #0f0f11;
+    color: #ff5722;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 3px solid #c23b22;
+    text-shadow: 0 0 5px rgba(194, 59, 34, 0.8);
+}
+table.grid-dragon-magma tr:last-child td { border-bottom: none; }
+table.grid-dragon-magma tr:hover td { background: #1a1a1c; box-shadow: inset 0 -2px 0 #ff4500; color: #fff; transition: all 0.2s; }
+
+/* ============================================================
+   INVENTORY GRID (metin2-style slot board)
+   ============================================================ */
+/* Flex row container for grid wrappers (added by JS to avoid inline-block gap) */
+.inv-grid-flex-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px auto 0;
+}
+.inv-grid-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 20px auto;
+    text-align: center;
+    vertical-align: top;
+}
+
+/* 9-slice board frame */
+.inv-grid-board {
+    position: relative;
+    display: inline-block;
+    background:
+        url('../img/game_board/board_corner_lefttop.png') 0 0 no-repeat,
+        url('../img/game_board/board_corner_righttop.png') right 0 no-repeat,
+        url('../img/game_board/board_corner_leftbottom.png') 0 bottom no-repeat,
+        url('../img/game_board/board_corner_rightbottom.png') right bottom no-repeat,
+        url('../img/game_board/board_line_top.png') 32px 0 no-repeat,
+        url('../img/game_board/board_line_bottom.png') 32px bottom no-repeat,
+        url('../img/game_board/board_line_left.png') 0 32px no-repeat,
+        url('../img/game_board/board_line_right.png') right 32px no-repeat,
+        url('../img/game_board/board_base.png') 32px 32px repeat;
+    background-size:
+        32px 32px, 32px 32px, 32px 32px, 32px 32px,
+        calc(100% - 64px) 32px, calc(100% - 64px) 32px,
+        32px calc(100% - 64px), 32px calc(100% - 64px),
+        96px 96px;
+    padding: 38px 10px 14px;
+}
+
+/* Titlebar overlay */
+.inv-grid-board::before {
+    content: attr(data-title);
+    position: absolute;
+    left: -4px;
+    top: -14px;
+    width: calc(100% + 8px);
+    height: 50px;
+    box-sizing: border-box;
+    padding: 0 33px;
+    background-image:
+        url('../img/game_board/titlebar/titlebar_left.png'),
+        url('../img/game_board/titlebar/titlebar_right.png'),
+        url('../img/game_board/titlebar/titlebar_center.png');
+    background-position: left top, right top, 0 0;
+    background-size: 33px 50px, 33px 50px, 33px 50px;
+    background-repeat: no-repeat, no-repeat, repeat-x;
+    background-origin: padding-box, padding-box, content-box;
+    background-clip: padding-box, padding-box, content-box;
+    z-index: 4;
+    pointer-events: none;
+    overflow: hidden;
+    color: #ffab09;
+    font: bold 13px/60px Arial, sans-serif;
+    text-align: center;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+/* Slot grid inside the board */
+.inv-grid-slots {
+    display: inline-grid;
+    gap: 0px;
+    background: url('../img/game_board/inv_field.png') repeat;
+    padding: 0;
+    image-rendering: pixelated;
+}
+
+/* Individual slot cell */
+.inv-grid-slot {
+    width: 32px;
+    height: 32px;
+    position: relative;
+    box-sizing: border-box;
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    transition: background 0.15s;
+    overflow: hidden;
+}
+.inv-grid-slot:hover {
+    background: rgba(255,204,141,0.12);
+}
+
+/* Item icon inside a slot */
+.inv-grid-slot img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 100%;
+    max-height: 100%;
+    image-rendering: pixelated;
+    pointer-events: none;
+}
+
+/* Multi-slot items (2-slot tall) */
+.inv-grid-slot[data-item-size="2"] {
+    grid-row: span 2;
+    height: 64px;
+}
+
+/* Multi-slot items (3-slot tall) */
+.inv-grid-slot[data-item-size="3"] {
+    grid-row: span 3;
+    height: 96px;
+}
+
+/* Slots occupied by a multi-slot item */
+.inv-grid-slot[data-occupied-by] {
+    display: none;
+}
+
+/* ============================================================
+   ITEM LINKS and THINBOARD TOOLTIP
+   ============================================================ */
+a.item-link {
+    color: var(--color-link);
+    font-weight: normal;
+    display: inline;
+    cursor: pointer;
+    border-bottom: none;
+}
+a.item-link.item-show-name {
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    padding: 4px 6px;
+    border-bottom: none;
+}
+a.item-link.item-show-name .item-icon {
+    display: block;
+    margin: 0 auto 2px;
+}
+a.item-link.item-show-name .item-name-label {
+    display: block;
+    font-size: 11px;
+    text-align: center;
+    color: var(--color-gold, #ffcc8d);
+}
+a.item-link:hover {
+    color: var(--color-gold);
+    text-decoration: none;
+}
+
+.item-icon {
+    display: inline-block;
+    vertical-align: middle;
+    image-rendering: pixelated;
+}
+
+/* Inline game item (from editor, before render transform) */
+.game-item {
+    display: inline;
+    background: rgba(255,204,141,0.12);
+    color: var(--color-gold, #ffcc8d);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid rgba(255,204,141,0.25);
+    font-size: 0.9em;
+    vertical-align: baseline;
+}
+.game-item img.item-icon-inline,
+a.item-link img.item-icon {
+    display: inline;
+    vertical-align: middle;
+    margin-right: 4px;
+    image-rendering: pixelated;
+    border-radius: 0;
+}
+
+/* Tooltip container */
+.mt2-thinboard {
+    position: fixed;
+    z-index: 99999;
+    pointer-events: none;
+    min-width: 190px;
+    max-width: 280px;
+    padding: 12px 14px;
+    background: rgba(0,0,0,0.88);
+    border: 2px solid var(--color-border);
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.6), inset 0 0 12px rgba(0,0,0,0.3);
+    font-family: 'Tahoma', 'Arial', sans-serif;
+    font-size: 11px;
+    line-height: 17px;
+    color: #c2c2c2;
+    text-align: center;
+    display: none;
+    white-space: nowrap;
+}
+.mt2-thinboard.visible {
+    display: block;
+}
+/* Nowoczesny tippy.js glass theme dla przedmiotów */
+.tippy-box[data-theme~='mt2-glass'] {
+    background: rgba(16, 12, 9, 0.92);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid #715b43;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px #110d0a, 0 0 0 2px #3c2e22, 0 10px 30px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(212, 175, 55, 0.05);
+    color: #e8dcc3;
+    font-family: 'Tahoma', 'Arial', sans-serif;
+    font-size: 11px;
+    line-height: 17px;
+    padding: 2px;
+    text-align: center;
+}
+.tippy-box[data-theme~='mt2-glass'] .tippy-content {
+    padding: 10px 14px;
+}
+.tippy-box[data-theme~='mt2-glass'] .tippy-arrow {
+    color: #715b43;
+}
+.mt2-tb-hr {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4) 50%, transparent);
+    margin: 6px 0;
+}
+.mt2-tb-name {
+    color: #ffcc4d;
+    font-size: 13px;
+    font-weight: bold;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.item-desc-text {
+    color: #c2c2c2;
+}
+    font-weight: bold;
+    margin-bottom: 1px;
+}
+.mt2-tb-name.golden { color: #ffd700; }
+.mt2-tb-name.unikat { color: #ff6a00; }
+.mt2-tb-subinfo {
+    color: #888;
+    font-size: 10px;
+    margin-bottom: 2px;
+}
+.mt2-tb-level {
+    color: #81d4fa;
+    margin-bottom: 2px;
+}
+.mt2-tb-stat {
+    color: #ccc;
+    margin-bottom: 1px;
+}
+.mt2-tb-affect {
+    color: #7ec97e;
+    margin-bottom: 1px;
+}
+.mt2-tb-affect.negative { color: #d9534f; }
+.mt2-tb-attr {
+    color: #56a0d3;
+    margin-bottom: 1px;
+}
+.mt2-tb-attr.maxval { color: #d4a017; }
+.mt2-tb-attr.rare { color: #bf00ff; }
+.mt2-tb-attr.negative { color: #d9534f; }
+.mt2-tb-wear {
+    color: #aaa;
+    font-size: 10px;
+}
+.mt2-tb-desc {
+    color: #b0b0b0;
+    font-size: 10px;
+    line-height: 1.4;
+    max-width: 280px;
+}
+.mt2-tb-space {
+    height: 4px;
+}
+.mt2-tb-timer {
+    color: #81d4fa;
+    margin-top: 3px;
+}
+
+/* ============================================================
+   CTA BUTTONS (download, register, etc.)
+   ============================================================ */
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+.cta-btn {
+    display: inline-block;
+    padding: 12px 30px;
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    background: rgba(0,0,0,0.5);
+    transition: all 0.3s;
+    text-decoration: none;
+}
+.cta-btn:hover {
+    background: var(--color-border);
+    color: #000;
+    text-decoration: none;
+}
+.cta-btn.cta-primary {
+    background: linear-gradient(180deg, #8b5e2e 0%, #5a3a1c 100%);
+    border-color: var(--color-gold);
+}
+.cta-btn.cta-primary:hover {
+    background: linear-gradient(180deg, #ad7a3a 0%, #6d4922 100%);
+}
+
+/* ============================================================
+   FAQ Section
+   ============================================================ */
+.faq-item {
+    margin: 10px auto;
+    max-width: 800px;
+    border: 1px solid rgba(146,118,79,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.faq-question {
+    background: rgba(0,0,0,0.4);
+    padding: 12px 15px;
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: 15px;
+    color: var(--color-gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.faq-question::after {
+    content: '+';
+    font-size: 18px;
+    font-weight: bold;
+    transition: transform 0.3s;
+}
+.faq-item.open .faq-question::after {
+    content: '-';
+}
+.faq-answer {
+    display: none;
+    padding: 12px 15px;
+    background: rgba(0,0,0,0.2);
+    font-size: 13px;
+    line-height: 1.6;
+}
+.faq-item.open .faq-answer {
+    display: block;
+}
+
+/* ============================================================
+   ITEM EXCHANGE / COMPARISON BOXES
+   ============================================================ */
+.item-exchange {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 15px auto;
+    max-width: 600px;
+    padding: 15px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(146,118,79,0.2);
+    border-radius: 4px;
+}
+.item-exchange .arrow {
+    font-size: 24px;
+    color: var(--color-gold);
+}
+
+/* ============================================================
+   SCROLL REVEAL (custom - replaces AOS)
+   ============================================================ */
+.gl-reveal {
+    opacity: 0;
+    transform: translateY(35px);
+    transition: opacity 0.65s ease-out, transform 0.65s ease-out;
+    will-change: opacity, transform;
+}
+.gl-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ============================================================
+   BACK TO TOP
+   ============================================================ */
+.back-to-top {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1005;
+    width: 48px;
+    height: 48px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    color: var(--color-gold);
+    font-size: 20px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.back-to-top:hover {
+    background: var(--color-border);
+    color: #000;
+}
+.back-to-top.visible {
+    display: flex;
+}
+
+/* ============================================================
+   EDITOR CONTENT: Presentation Bars, Separators, Item Slots
+   ============================================================ */
+
+/* Generic separator from editor (simple image) */
+.section-html-content .presentation-separator {
+    text-align: center;
+    margin: 16px auto;
+}
+.section-html-content .presentation-separator img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Separator with text overlay */
+.section-html-content .separator-with-text {
+    position: relative;
+    display: block;
+    text-align: center;
+    margin: 16px auto;
+}
+/* duza_belka_z_tekstem â€” full-width breakout like main-title-bar */
+.section-html-content .separator-with-text[data-sep-key="duza_belka_z_tekstem"] {
+    width: calc(100vw - var(--sidebar-width) - var(--divider-right) - var(--divider-width) + 8px);
+    margin-left: 50%;
+    transform: translateX(-50%);
+    aspect-ratio: 1920 / 192;
+    background: url('../img/duza_belka_pozioma_z_miejscem_na_tekst_po_srodku.png') center center / cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.section-html-content .separator-with-text[data-sep-key="duza_belka_z_tekstem"] > img:not(.pixi-text-img) {
+    display: none;  /* hide <img>, use background instead – keep pixi overlay */
+}
+/* mala_belka_pozioma after duza_belka_z_tekstem â€” same full-width breakout */
+.section-html-content .separator-with-text[data-sep-key="duza_belka_z_tekstem"] + .presentation-separator {
+    width: calc(100vw - var(--sidebar-width) - var(--divider-right) - var(--divider-width) + 8px);
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
+
+/* ============================================================
+   ITEMSHOP � Payment Widget (game-payment preview)
+   ============================================================ */
+.gp-widget {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    background: radial-gradient(ellipse at 50% 0%, #1a0f2e 0%, #0c0614 60%);
+    padding: 28px 24px 22px;
+    margin: 18px auto;
+    max-width: 560px;
+    text-align: center;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #d8cde8;
+    border: 1px solid rgba(255,106,66,0.12);
+    box-shadow: 0 0 40px rgba(255,106,66,0.08), 0 0 80px rgba(228,195,105,0.04);
+}
+/* Glow overlays */
+.gp-widget .gp-glow {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+}
+.gp-widget .gp-glow::before {
+    content: ''; position: absolute; top: -30%; left: 50%; transform: translateX(-50%);
+    width: 140%; height: 80%;
+    background: radial-gradient(ellipse, rgba(255,106,66,0.09) 0%, transparent 65%);
+}
+.gp-widget .gp-glow::after {
+    content: ''; position: absolute; bottom: -20%; left: 50%; transform: translateX(-50%);
+    width: 120%; height: 60%;
+    background: radial-gradient(ellipse, rgba(228,195,105,0.05) 0%, transparent 60%);
+}
+/* Particles */
+.gp-widget .gp-particles {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+}
+.gp-widget .gp-particles span {
+    position: absolute; border-radius: 50%;
+    animation: gp-float linear infinite;
+}
+.gp-particles .gp-p-orange { background: rgba(255,106,66,0.45); }
+.gp-particles .gp-p-gold   { background: rgba(228,195,105,0.4); }
+.gp-particles .gp-p-white  { background: rgba(255,255,255,0.3); }
+@keyframes gp-float {
+    0%   { transform: translateY(0) scale(1); opacity: 0; }
+    8%   { opacity: 1; }
+    85%  { opacity: 0.8; }
+    100% { transform: translateY(-500px) scale(0.2); opacity: 0; }
+}
+/* Content inside widget */
+.gp-widget .gp-inner { position: relative; z-index: 1; }
+.gp-widget .gp-treasure { width: 140px; height: 90px; margin: 0 auto 6px; }
+.gp-widget .gp-treasure svg { width: 100%; height: 100%; }
+.gp-widget .gp-badge {
+    display: inline-block; font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; color: #e4c369;
+    background: rgba(228,195,105,0.08); border: 1px solid rgba(228,195,105,0.2);
+    border-radius: 14px; padding: 3px 14px; margin-bottom: 6px;
+}
+.gp-widget .gp-hero {
+    font-size: 20px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 4px;
+}
+.gp-widget .gp-hero .gp-accent { color: #ff6a42; }
+.gp-widget .gp-hero .gp-gold { color: #e4c369; }
+.gp-widget .gp-subtitle {
+    font-size: 11px; color: #8878a8; line-height: 1.5; margin-bottom: 14px;
+}
+.gp-widget .gp-features { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.gp-widget .gp-feat {
+    flex: 1; max-width: 145px; min-width: 110px;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 10px 8px 8px;
+    transition: border-color 0.3s, transform 0.3s;
+}
+.gp-widget .gp-feat:hover { border-color: rgba(255,106,66,0.25); transform: translateY(-2px); }
+.gp-widget .gp-feat-ico { width: 26px; height: 26px; margin: 0 auto 5px; }
+.gp-widget .gp-feat-ico svg { width: 100%; height: 100%; }
+.gp-widget .gp-feat-title { font-size: 10px; font-weight: 700; color: #d8cde8; margin-bottom: 2px; }
+.gp-widget .gp-feat-desc { font-size: 8px; color: #6858a0; line-height: 1.4; }
+@keyframes gp-sparkle { 0%,100%{opacity:0.15} 50%{opacity:0.7} }
+@keyframes gp-gem-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+@keyframes gp-pulse-glow { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.12)} }
+.gp-widget .gp-treasure-glow {
+    position: absolute; inset: -20px;
+    background: radial-gradient(circle, rgba(255,106,66,0.18) 0%, rgba(228,195,105,0.08) 30%, transparent 65%);
+    border-radius: 50%; animation: gp-pulse-glow 3.5s ease-in-out infinite;
+}
+.section-html-content .separator-with-text[data-sep-key="duza_belka_z_tekstem"] + .presentation-separator img {
+    width: 100%;
+    max-width: none;
+    height: auto;
+}
+.section-html-content .separator-with-text img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+.section-html-content .separator-with-text .sep-text {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+    pointer-events: none;
+}
+
+/* Presentation bar with text overlay */
+.section-html-content .presentation-bar {
+    position: relative;
+    display: block;
+    text-align: center;
+    margin: 16px auto;
+}
+.section-html-content .presentation-bar img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+.section-html-content .presentation-bar .bar-text {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+    pointer-events: none;
+}
+
+/* Item on slot (item displayed on slot background) */
+.section-html-content .item-on-slot {
+    position: relative;
+    display: inline-block;
+    margin: 6px 6px 20px;
+    vertical-align: middle;
+}
+.section-html-content .item-on-slot .slot-bg {
+    display: block;
+}
+.section-html-content .item-on-slot .slot-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    image-rendering: pixelated;
+}
+.section-html-content .item-on-slot .slot-name {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: calc(100% + 2px);
+    white-space: nowrap;
+    font-size: 11px;
+    color: var(--color-gold, #ffcc8d);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+/* Inline game-item with name below icon */
+.section-html-content .game-item.item-show-name,
+.game-item.item-show-name {
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    padding: 4px 6px;
+}
+.section-html-content .game-item.item-show-name img,
+.game-item.item-show-name img.item-icon-inline {
+    display: block;
+    margin: 0 auto 2px;
+}
+.section-html-content .game-item.item-show-name .item-name-label,
+.game-item.item-show-name .item-name-label {
+    display: block;
+    font-size: 11px;
+    text-align: center;
+    color: var(--color-gold, #ffcc8d);
+}
+
+/* ================================================================
+   MOBILE RESPONSIVE  (breakpoint 1050px � matches JS hamburger)
+   Desktop layout is NOT affected � all rules are inside @media.
+   ================================================================ */
+@media (max-width: 1050px) {
+
+    /* ---------- hide sidebar & divider ---------- */
+    .full-left,
+    .sidebar-divider {
+        display: none !important;
+    }
+
+    /* ---------- main takes full width ---------- */
+    .full-main {
+        margin-right: 0 !important;
+        transform: none !important;
+    }
+
+    /* ---------- content wrapper ---------- */
+    .full-content {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 12px;
+    }
+
+    /* ---------- tsparticles full viewport ---------- */
+    #tsparticles {
+        left: 0 !important;
+        width: 100% !important;
+    }
+
+    /* ---------- discord floating widget ---------- */
+    #dc-float-widget {
+        display: none !important;
+    }
+
+    /* ---------- section background breakouts ---------- */
+    .section-wrapper::before {
+        background-size: auto;
+    }
+
+    /* ---------- page header & title bar ---------- */
+    .page-header {
+        aspect-ratio: auto;
+        height: 30vw;
+        min-height: 140px;
+        background-size: cover;
+        background-position: center;
+    }
+    .main-title-bar {
+        margin-top: 0;
+    }
+
+    /* ---------- heading graphic bars: scale background to fit ---------- */
+    h2.section-heading {
+        background-size: 100% 100%;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1034 / 143;
+        font-size: clamp(14px, 4vw, var(--h2-font-size));
+    }
+    h2.section-heading-text {
+        background-size: 100% 100%;
+        width: 100%;
+        max-width: var(--h2text-width);
+        height: auto;
+        aspect-ratio: 482 / 111;
+        font-size: clamp(13px, 3.8vw, var(--h2text-font-size));
+    }
+    h3.sub-heading {
+        background-size: 100% 100%;
+        width: 100%;
+        max-width: var(--h3-width);
+        height: auto;
+        aspect-ratio: 482 / 111;
+        font-size: clamp(13px, 3.5vw, var(--h3-font-size));
+    }
+    h4.sub-heading-small {
+        background-size: 100% 100%;
+        width: 100%;
+        max-width: var(--h4-width);
+        height: auto;
+        aspect-ratio: 482 / 111;
+        font-size: clamp(12px, 3.2vw, var(--h4-font-size));
+    }
+
+    /* ---------- duza_belka full-width breakout ---------- */
+    .section-html-content .separator-with-text[data-sep-key="duza_belka_z_tekstem"] {
+        width: 100vw;
+    }
+    .section-html-content .separator-with-text[data-sep-key="duza_belka_z_tekstem"] + .presentation-separator {
+        width: 100vw;
+    }
+
+    /* ---------- tables: allow horizontal scroll ---------- */
+    .content-table {
+        font-size: 11px;
+    }
+    .content-table th,
+    .content-table td {
+        padding: 5px 6px;
+    }
+
+    /* ---------- grid tables ---------- */
+    .grid-table-head,
+    .grid-table-row {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)) !important;
+    }
+
+    /* ---------- CTA boxes ---------- */
+    .cta-box {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+    }
+
+    /* ---------- back-to-top closer to edge ---------- */
+    .back-to-top {
+        right: 10px !important;
+        bottom: 10px !important;
+    }
+}
+
+/* ---- small phones ---- */
+@media (max-width: 480px) {
+    .full-content {
+        padding: 0 8px;
+    }
+    .page-header {
+        height: 25vw;
+        min-height: 100px;
+    }
+    .page-header .header-logo {
+        max-height: 50%;
+    }
+    h2.section-heading {
+        font-size: clamp(12px, 3.5vw, 18px);
+    }
+    .content-table {
+        font-size: 10px;
+    }
+    .content-table th,
+    .content-table td {
+        padding: 4px;
+    }
+}
