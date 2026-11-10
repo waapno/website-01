@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en" class="no-js" data-lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script>
+    /* Runs before paint: language + return-visit flags */
+    (function () {
+      var d = document.documentElement;
+      d.classList.remove("no-js"); d.classList.add("js");
+      try {
+        var q = new URLSearchParams(location.search).get("lang");
+        var l = (q || localStorage.getItem("zi-lang") || "en").toLowerCase();
+        if (l === "cz") l = "cs";
+        if (l !== "cs" && l !== "en") l = "en";
+        d.lang = l; d.setAttribute("data-lang", l);
+        if (sessionStorage.getItem("zi-visited")) d.classList.add("is-return");
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Primary -->
+  <title>Zlatorz Industries · Base Camp — Support the Expedition</title>
+  <meta name="description" content="Support the IRL outdoor crazy challenges of Zlatorz Industries. Donate via LootElement (recommended for CZ/SK) or StreamElements, back the MC Network and join the Discord." />
+  <meta name="keywords" content="Zlatorz Industries, IRL stream, outdoor challenge, donate, LootElement, StreamElements, Minecraft network, Discord" />
+  <meta name="author" content="Zlatorz Industries" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#0b0f0d" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="application-name" content="Zlatorz Industries · Base Camp" />
+  <meta name="apple-mobile-web-app-title" content="ZI Base Camp" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <!-- Open Graph (Facebook, Discord, WhatsApp, Messenger, LinkedIn, Telegram, Slack…) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Zlatorz Industries" />
+  <meta property="og:title" content="Zlatorz Industries · Support the Expedition" />
+  <meta property="og:description" content="Outdoors, off-grid, no script. Every donation pushes the challenge one step further — pick your route." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="cs_CZ" />
+  <meta property="og:locale:alternate" content="sk_SK" />
+  <meta property="og:image" content="assets/og-image.jpg" />
+  <meta property="og:image:secure_url" content="assets/og-image.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Hiker with a headlamp on a night ridge above a misty lake — Zlatorz Industries Base Camp" />
+
+  <!-- X / Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Zlatorz Industries · Support the Expedition" />
+  <meta name="twitter:description" content="IRL outdoor crazy challenges. Donate, trigger a challenge, join the crew." />
+  <meta name="twitter:image" content="assets/og-image.jpg" />
+  <meta name="twitter:image:alt" content="Hiker with a headlamp on a night ridge above a misty lake — Zlatorz Industries Base Camp" />
+
+  <!-- Icons / PWA -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Zlatorz Industries · Base Camp",
+    "description": "Donation hub for IRL outdoor crazy challenges.",
+    "inLanguage": ["en", "cs"],
+    "publisher": {
+      "@type": "Organization",
+      "name": "Zlatorz Industries",
+      "sameAs": ["https://discord.gg/EQNjkvTpPs", "https://siphcf.eu/linktree"]
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="assets/night-ridge.jpg" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ============ Transition veil (load / leave / return) ============ -->
+  <div class="veil" id="veil" aria-hidden="true">
+    <div class="veil__inner">
+      <div class="compass">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="56" class="compass__ring" />
+          <circle cx="60" cy="60" r="42" class="compass__ring compass__ring--2" />
+          <circle cx="60" cy="60" r="28" class="compass__ring compass__ring--3" />
+          <g class="compass__ticks">
+            <path d="M60 2v10M60 108v10M2 60h10M108 60h10" />
+          </g>
+          <g class="compass__needle">
+            <path d="M60 22 67 60H53Z" class="compass__north" />
+            <path d="M60 98 53 60h14Z" />
+          </g>
+          <circle cx="60" cy="60" r="3.5" class="compass__hub" />
+        </svg>
+      </div>
+      <p class="veil__label" id="veilLabel">Locating base camp</p>
+      <p class="veil__coords" id="veilCoords">00.0000° N · 00.0000° E</p>
+      <div class="veil__bar"><i id="veilBar"></i></div>
+    </div>
+  </div>
+
+  <!-- ============ Background ============ -->
+  <div class="bg" aria-hidden="true">
+    <div class="bg__photo" data-parallax></div>
+    <svg class="bg__topo" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M-50 140 C 200 90, 380 210, 620 150 S 1050 60, 1500 160" />
+        <path d="M-50 230 C 220 180, 400 300, 650 240 S 1080 150, 1500 250" />
+        <path d="M-50 330 C 160 290, 420 400, 700 330 S 1100 260, 1500 350" />
+        <path d="M-50 640 C 240 590, 460 700, 760 630 S 1180 560, 1500 660" />
+        <path d="M-50 740 C 260 690, 520 800, 800 730 S 1200 660, 1500 760" />
+        <path d="M-50 840 C 220 800, 500 900, 820 830 S 1220 760, 1500 860" />
+        <ellipse cx="260" cy="110" rx="70" ry="38" /><ellipse cx="260" cy="110" rx="44" ry="22" /><ellipse cx="260" cy="110" rx="20" ry="9" />
+        <ellipse cx="1180" cy="120" rx="70" ry="38" /><ellipse cx="1180" cy="120" rx="44" ry="22" /><ellipse cx="1180" cy="120" rx="20" ry="9" />
+      </g>
+    </svg>
+    <div class="bg__lamp"></div>
+    <div class="bg__embers" id="embers"></div>
+    <div class="bg__grain"></div>
+    <div class="bg__vignette"></div>
+  </div>
+
+  <!-- ============ Top bar ============ -->
+  <header class="topbar">
+    <a class="back" id="backToStream" href="https://www.youtube.com/@SipColaTV" data-enter>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+      <span data-i18n="back">Return to stream</span>
+    </a>
+
+    <div class="topbar__right" data-enter>
+      <div class="telemetry" aria-hidden="true">
+        <span class="telemetry__coords">50.0755° N · 14.4378° E</span>
+        <span class="telemetry__clock" id="clock">--:--:--</span>
+        <span class="live"><i></i>IRL</span>
+      </div>
+      <div class="lang" role="group" aria-label="Language">
+        <span class="lang__thumb" aria-hidden="true"></span>
+        <button type="button" class="lang__btn" data-lang-btn="en" aria-pressed="true">EN</button>
+        <button type="button" class="lang__btn" data-lang-btn="cs" aria-pressed="false">CZ</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ Main ============ -->
+  <main class="wrap" id="main">
+    <section class="hero">
+      <p class="eyebrow" data-enter>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20 9.5 7l3.5 6 2-3 6 10H3Z" /></svg>
+        Zlatorz Industries <span class="dot">·</span> <span data-i18n="camp_name">Base camp</span>
+      </p>
+      <h1 class="title" data-enter>
+        <span data-i18n="title1">Support the</span>
+        <span class="title__accent"><span data-i18n="title2">expedition</span><em>.</em></span>
+      </h1>
+      <p class="lead" data-enter data-i18n="lead">Outdoors, off-grid, no script. Every donation pushes the challenge one step further — pick your route.</p>
+    </section>
+
+    <nav class="routes" aria-label="Support options">
+      <a class="route route--primary" href="https://lootelement.com/donate/waapno" data-go data-name="LootElement" data-key="1" data-enter>
+        <span class="route__chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z" /></svg><span data-i18n="r1_chip">Recommended · CZ/SK</span></span>
+        <span class="route__num">01</span>
+        <span class="route__text">
+          <b class="route__name">LootElement</b>
+          <small class="route__sub" data-i18n="r1_sub">Trigger a challenge live</small>
+        </span>
+        <span class="route__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg></span>
+      </a>
+
+      <a class="route" href="https://streamelements.com/waapno/tip" data-go data-name="StreamElements" data-key="2" data-enter>
+        <span class="route__num">02</span>
+        <span class="route__text">
+          <b class="route__name">StreamElements</b>
+          <small class="route__sub" data-i18n="r2_sub">Classic tip with an on-stream message</small>
+        </span>
+        <span class="route__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg></span>
+      </a>
+
+      <div class="route route--locked" role="link" aria-disabled="true" tabindex="0" data-soon data-key="3" data-enter>
+        <span class="route__num">03</span>
+        <span class="route__text">
+          <b class="route__name">MC Network</b>
+          <small class="route__sub" data-i18n="r3_sub">Support the Minecraft server</small>
+        </span>
+        <span class="badge-soon" data-i18n="soon">Soon</span>
+      </div>
+
+      <p class="note" data-enter>
+        <span class="note__flags" aria-hidden="true"><i class="flag flag--cz"></i><i class="flag flag--sk"></i></span>
+        <span data-i18n="note"><b>Czech &amp; Slovak viewers:</b> we strongly recommend LootElement.</span>
+      </p>
+    </nav>
+
+    <section class="camp" aria-label="Community">
+      <p class="camp__label" data-enter>— <span data-i18n="campfire">Campfire</span> —</p>
+      <div class="camp__links" data-enter>
+        <a class="pill pill--discord" href="https://discord.gg/EQNjkvTpPs" data-go data-name="Discord" data-key="4">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a19.9 19.9 0 0 0 6 3l1.3-2a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2a19.8 19.8 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z" fill="currentColor" stroke="none"/></svg>
+          Discord
+        </a>
+        <a class="pill" href="https://siphcf.eu/linktree" data-go data-name="Linktree" data-key="5">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 7l7 5 7-5M5 14l7 5 7-5" /></svg>
+          Linktree
+        </a>
+      </div>
+    </section>
+
+    <footer class="foot" data-enter>
+      <span>© <span id="year"></span> Zlatorz Industries</span>
+      <span class="foot__hint" data-i18n="hint">Keys <kbd>1</kbd>–<kbd>5</kbd> quick route · <kbd>Esc</kbd> back to stream</span>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="sparks" id="sparks" aria-hidden="true"></div>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>
