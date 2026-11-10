@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sip Of Cola TV — Sub goals</title>
+<title>FLEO — Sub goals</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500;600&amp;family=Sora:wght@300;400;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500;600&family=Sora:wght@300;400;600&display=swap" rel="stylesheet">
 <style>:root{--void:#04050a;--deep:#0b0e1a;--ember:#ffb45e;--flare:#ff7a2e;--ice:#a9c8ff;--bone:#ece6da;--dim:#7d8296;--line:rgba(169,200,255,.09);--glass:rgba(12,15,28,.55);--ease:cubic-bezier(.2,.8,.2,1);color-scheme:dark}
 *{box-sizing:border-box;margin:0}
 html{scroll-behavior:smooth;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -186,9 +187,9 @@ section>h2{font-size:32px;margin-bottom:28px}
 <nav class="nav" id="nav" aria-label="Sections"><a href="#top" class="cnt" id="navnum">0</a><a href="#milestones">Milestones</a><a href="#gifted">Gifted</a><a href="#wheel-s">Wheel</a></nav>
 <main id="top">
 <header>
- <span class="eyebrow">Sip Of Cola TV</span>
- <h1>Sip Of Cola TV Sub goals</h1>
- <p>Milestones &amp; challenges.</p>
+ <span class="eyebrow">FLEO</span>
+ <h1>FLEO Sub goals</h1>
+ <p>Milestones & challenges.</p>
 </header>
 
 <div class="hero" id="hero">
@@ -246,13 +247,13 @@ section>h2{font-size:32px;margin-bottom:28px}
   <div><button id="exj">Save state (.json)</button><button id="imj">Load state</button></div>
   <div><button id="exp">Download public page</button></div>
   <div><button id="reset">Reset everything</button></div></fieldset>
-  <input type="file" id="file" accept=".json,application/json" hidden="">
+  <input type="file" id="file" accept=".json,application/json" hidden>
  </div>
  <button id="gear" aria-label="Control panel">Controls <kbd>C</kbd></button>
 </div>
 <div class="toast" id="toast"></div>
 
-<script type="application/json" id="state">{"public":true,"subs":0,"gifted":0,"giftHits":[0,0,0],"queue":[0,0,0,0],"spins":[0,0,0,0],"done":[[],[],[],[]],"goalsDone":[],"log":[],"pending":null}</script>
+<script type="application/json" id="state">{"public":false}</script>
 <script>
 const GOALS=[
 [24,"24-hour stream, no sleep","Every 4th hour chat picks a stay-awake mini-challenge."],
@@ -417,6 +418,47 @@ document.addEventListener('change',e=>{
   r.readAsText(f);i.value=''}
 });
 document.addEventListener('keydown',e=>{if(S.public||e.target.tagName==='INPUT')return;if(e.key==='c'||e.key==='C')$('panel').classList.toggle('on')});
-if(S.public){$('dock').hidden=true;document.querySelector('footer').textContent='Sip Of Cola TV · Sub goals snapshot';$('gear').disabled=true}
+if(S.public){$('dock').hidden=true;document.querySelector('footer').textContent='FLEO · Sub goals snapshot';$('gear').disabled=true}
 render();
-</script></body></html>
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id),RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+/* cursor glow + card spotlight */
+addEventListener('pointermove',e=>{document.body.style.setProperty('--mx',e.clientX+'px');document.body.style.setProperty('--my',e.clientY+'px');
+ const g=e.target.closest&&e.target.closest('.g');if(g){const r=g.getBoundingClientRect();g.style.setProperty('--x',e.clientX-r.left+'px');g.style.setProperty('--y',e.clientY-r.top+'px')}},{passive:true});
+/* black hole tilt */
+const hero=$('hero'),hole=$('holeEl');
+hero.addEventListener('pointermove',e=>{const r=hole.getBoundingClientRect(),dx=(e.clientX-r.left-r.width/2)/r.width,dy=(e.clientY-r.top-r.height/2)/r.height;hole.style.setProperty('--ry',dx*18+'deg');hole.style.setProperty('--rx',-dy*18+'deg')});
+hero.addEventListener('pointerleave',()=>{hole.style.setProperty('--ry','0deg');hole.style.setProperty('--rx','0deg')});
+/* nav */
+const nav=$('nav'),secs=['milestones','gifted','wheel-s'].map($);
+addEventListener('scroll',()=>{nav.classList.toggle('on',scrollY>innerHeight*.55);let a=null;secs.forEach(s=>{if(s.getBoundingClientRect().top<innerHeight*.4)a=s.id});nav.querySelectorAll('a').forEach(l=>l.classList.toggle('act',l.hash==='#'+a))},{passive:true});
+/* fireworks */
+const fx=$('fx'),c=fx.getContext('2d');let P=[],run=false;
+function size(){fx.width=innerWidth;fx.height=innerHeight}size();addEventListener('resize',size);
+function burst(x,y,n){if(RM)return;for(let i=0;i<n;i++){const a=Math.random()*6.283,s=Math.random()*6+2;P.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2,l:1,h:Math.random()<.7?'255,180,94':'169,200,255'})}if(!run){run=true;requestAnimationFrame(loop)}}
+function loop(){c.clearRect(0,0,fx.width,fx.height);P=P.filter(p=>p.l>0);for(const p of P){p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.vx*=.98;p.l-=.014;c.fillStyle='rgba('+p.h+','+p.l+')';c.beginPath();c.arc(p.x,p.y,2*p.l+.4,0,7);c.fill()}if(P.length)requestAnimationFrame(loop);else run=false}
+/* observe changes */
+const num=$('num');let last=+num.textContent;
+const sync=()=>{const v=+num.textContent;$('navnum').textContent=v;$('stSubs').textContent=v;
+ const nx=document.querySelector('#list .g.next .th');$('stNext').textContent=nx?nx.textContent:'✓';
+ if(v>last){const r=num.getBoundingClientRect();if(r.bottom>0)burst(r.left+r.width/2,r.top+r.height/2,Math.min(80,14+(v-last)*4))}last=v;reveal()};
+new MutationObserver(sync).observe(num,{childList:true,characterData:true,subtree:true});
+new MutationObserver(()=>{if($('toast').classList.contains('on')&&/Goal/.test($('toast').textContent))burst(innerWidth/2,90,120)}).observe($('toast'),{attributes:true});
+/* wheel spinning state */
+const sp=$('spin'),wb=$('wheelbox');let wasSpin=false;
+new MutationObserver(()=>{}).observe(sp,{attributes:true});
+sp.addEventListener('click',()=>{if(!sp.disabled)return;wasSpin=true;wb.classList.add('go')},true);
+new MutationObserver(()=>{if(wasSpin&&$('result').innerHTML){wasSpin=false;wb.classList.remove('go');const r=wb.getBoundingClientRect();burst(r.left+r.width/2,r.top+12,60)}}).observe($('result'),{childList:true});
+document.addEventListener('click',e=>{if(e.target.closest('#spin'))setTimeout(()=>{if(sp.disabled&&!$('result').innerHTML){wasSpin=true;wb.classList.add('go')}},20)});
+/* scroll reveal */
+const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target)}}),{rootMargin:'0px 0px -8% 0px'});
+const seen=new WeakSet();
+function reveal(){document.querySelectorAll('#list .g,#gifts .g').forEach((g,i)=>{if(window.__rvDone){g.classList.add('rv','in');return}g.classList.add('rv');g.style.transitionDelay=(i%2)*80+'ms';io.observe(g)});setTimeout(()=>window.__rvDone=true,50)}
+new MutationObserver(reveal).observe($('list'),{childList:true});
+reveal();sync();
+})();
+</script>
+</body>
+</html>
