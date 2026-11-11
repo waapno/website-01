@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SipCola Chat">
+<title>SipColaTV – Live chat</title>
+<style>
+html,body{margin:0;padding:0;height:100%;background:#0e0e10;color:#eee;font-family:-apple-system,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%;overflow:hidden}
+*{-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+#app{position:absolute;top:0;left:0;right:0;bottom:0;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-orient:vertical;-webkit-flex-direction:column;flex-direction:column;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+#bar{-webkit-flex:0 0 auto;flex:0 0 auto;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;padding:8px 10px;background:#18181b;border-bottom:1px solid #2a2a2e}
+#dot{width:10px;height:10px;border-radius:50%;background:#555;margin-right:8px;-webkit-flex:0 0 auto;flex:0 0 auto}
+#dot.live{background:#ff2a2a;-webkit-animation:p 1.4s infinite;animation:p 1.4s infinite}
+@-webkit-keyframes p{50%{opacity:.35}}@keyframes p{50%{opacity:.35}}
+#title{-webkit-flex:1 1 auto;flex:1 1 auto;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#status{font-size:11px;color:#aaa;font-weight:400}
+.btn{-webkit-appearance:none;border:0;background:#2f2f35;color:#fff;font-size:13px;padding:7px 10px;border-radius:8px;margin-left:6px;-webkit-flex:0 0 auto;flex:0 0 auto}
+.btn.on{background:#e01b24}
+#main{position:relative;-webkit-flex:1 1 auto;flex:1 1 auto;overflow:hidden;-webkit-overflow-scrolling:touch}
+#chat{position:absolute;top:0;left:0;width:100%;height:100%;border:0;background:#0e0e10}
+#msg{position:absolute;top:0;left:0;right:0;bottom:0;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center;padding:24px;font-size:15px;line-height:1.45;color:#bbb}
+#msg input{width:100%;max-width:340px;font-size:16px;padding:10px;border-radius:8px;border:1px solid #333;background:#1c1c20;color:#fff;margin:12px 0 8px}
+#msg a{color:#ff5a5a}
+#alerts{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:5}
+#alerts iframe{position:absolute;top:0;left:0;width:1920px;height:1080px;border:0;background:transparent;-webkit-transform-origin:0 0;transform-origin:0 0;pointer-events:none}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="bar">
+    <div id="dot"></div>
+    <div id="title">SipColaTV <span id="status">hledám vysílání…</span></div>
+    <button class="btn on" id="bAlert">🔔</button>
+    <button class="btn" id="bSync">⟳</button>
+    <button class="btn" id="bOpen">↗</button>
+  </div>
+  <div id="main">
+    <iframe id="chat" class="hide" allowtransparency="true"></iframe>
+    <div id="msg">Hledám aktuální vysílání kanálu @SipColaTV…</div>
+    <div id="alerts"></div>
+  </div>
+</div>
+<script>
+(function(){
+  "use strict";
+  var HANDLE = "SipColaTV";
+  var CHECK_MS = 60000;
+  var ALERTS = [
+    "https://lootelement.com/overlay/_kGo92PkOD3Ch37VjWvwcEEZJwcV8FYzbyKRCSThxGo",
+    "https://streamelements.com/overlay/6af25e109b2168e53a24708d/qkFY-5rnLbyP6Y-8x8kY2KqrkowcItlp7YQGK5G4UgvX7PqV"
+  ];
+  var PROXIES = [
+    function(u){return "https://api.allorigins.win/raw?url="+encodeURIComponent(u);},
+    function(u){return "https://corsproxy.io/?url="+encodeURIComponent(u);},
+    function(u){return "https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u);}
+  ];
+  var $ = function(id){return document.getElementById(id);};
+  var chat=$("chat"), msg=$("msg"), dot=$("dot"), status=$("status"), alertsBox=$("alerts");
+  var currentId = null, manual = false;
+  var host = location.hostname || "localhost";
+
+  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+
+  function get(url, cb){
+    var i=0;
+    (function next(){
+      if(i>=PROXIES.length){cb(null);return;}
+      var x=new XMLHttpRequest(), done=false;
+      x.open("GET", PROXIES[i++](url + (url.indexOf("?")<0?"?":"&") + "_=" + Date.now()), true);
+      x.timeout=15000;
+      x.onload=function(){if(done)return;done=true; if(x.status===200&&x.responseText&&x.responseText.length>1000)cb(x.responseText); else next();};
+      x.onerror=x.ontimeout=function(){if(done)return;done=true;next();};
+      x.send();
+    })();
+  }
+
+  function parseLive(html){
+    if(!html) return null;
+    var m = html.match(/<link rel="canonical" href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/);
+    var live = /"isLiveNow":true|"isLive":true|"style":"LIVE"/.test(html);
+    if(m && live) return m[1];
+    if(m && /"isUpcoming":true/.test(html)) return m[1];
+    return null;
+  }
+
+  function showChat(id){
+    if(id===currentId) return;
+    currentId=id; store("sc_last", id);
+    chat.src="https://www.youtube.com/live_chat?v="+id+"&embed_domain="+encodeURIComponent(host)+"&dark_theme=1";
+    chat.className=""; msg.className="hide";
+  }
+
+  function showManual(text){
+    msg.className="";
+    msg.innerHTML = text +
+      '<input id="vid" placeholder="Vlož odkaz na stream nebo ID videa" autocapitalize="off" autocorrect="off">' +
+      '<button class="btn on" id="vgo">Načíst chat</button>' +
+      '<p style="font-size:12px;color:#777;margin-top:14px">Automaticky kontroluji nové vysílání každou minutu.<br><a href="https://www.youtube.com/@'+HANDLE+'/live" target="_blank">Otevřít kanál na YouTube</a></p>';
+    $("vgo").onclick=function(){
+      var v=$("vid").value, m=v.match(/(?:v=|youtu\.be\/|live\/|^)([\w-]{11})(?:\b|$)/);
+      if(m){manual=true; showChat(m[1]); setLive(true,"ručně");}
+    };
+  }
+
+  function setLive(on, t){dot.className=on?"live":""; status.textContent=t;}
+
+  function check(){
+    get("https://www.youtube.com/@"+HANDLE+"/live", function(html){
+      var id=parseLive(html);
+      if(id){manual=false; setLive(true,"ŽIVĚ"); showChat(id);}
+      else if(html){ if(!manual){setLive(false,"offline"); if(!currentId) showManual("Kanál právě nevysílá.<br>Chat se načte sám, jakmile začne stream.");} }
+      else { setLive(!!currentId, currentId?"poslední stream":"bez spojení");
+        if(!currentId){ var last=store("sc_last"); if(last) showChat(last); else showManual("Nepodařilo se ověřit vysílání.");} }
+    });
+  }
+
+  /* Alerts */
+  function scaleAlerts(){
+    var w=alertsBox.offsetWidth, h=alertsBox.offsetHeight, s=w/1920;
+    var f=alertsBox.getElementsByTagName("iframe"), top=Math.max(0,(h-1080*s)/2);
+    for(var i=0;i<f.length;i++){var t="translate(0,"+top+"px) scale("+s+")"; f[i].style.webkitTransform=t; f[i].style.transform=t;}
+  }
+  function alertsOn(on){
+    alertsBox.innerHTML="";
+    $("bAlert").className="btn"+(on?" on":"");
+    store("sc_alerts", on?"1":"0");
+    if(!on) return;
+    for(var i=0;i<ALERTS.length;i++){
+      var f=document.createElement("iframe");
+      f.setAttribute("allowtransparency","true"); f.setAttribute("scrolling","no");
+      f.setAttribute("allow","autoplay"); f.src=ALERTS[i];
+      alertsBox.appendChild(f);
+    }
+    scaleAlerts();
+  }
+  // iOS: audio alertů vyžaduje první dotyk
+  document.addEventListener("touchend",function u(){
+    try{var C=window.AudioContext||window.webkitAudioContext; if(C){var c=new C(); c.resume&&c.resume();}}catch(e){}
+    document.removeEventListener("touchend",u);
+  },false);
+
+  $("bAlert").onclick=function(){alertsOn(store("sc_alerts")==="0");};
+  $("bSync").onclick=function(){manual=false; currentId=null; status.textContent="hledám…"; check();};
+  $("bOpen").onclick=function(){
+    window.open(currentId?"https://www.youtube.com/live_chat?v="+currentId:"https://www.youtube.com/@"+HANDLE+"/live","_blank");
+  };
+  window.addEventListener("resize",scaleAlerts,false);
+  window.addEventListener("orientationchange",function(){setTimeout(scaleAlerts,300);},false);
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)check();},false);
+
+  alertsOn(store("sc_alerts")!=="0");
+  check();
+  setInterval(check, CHECK_MS);
+})();
+</script>
+</body>
+</html>
