@@ -1,0 +1,19 @@
+ALERT REPRO – čisté HTML
+========================
+
+Obsah:
+  index.html            celá appka (vzhled + logika v jednom souboru)
+  manifest.webmanifest  aby šla appka přidat na plochu mobilu
+  *.png                 ikony
+
+Jak to spustit na mobilu:
+  1) Nahraj celou složku na jakýkoli web hosting s https
+     (např. Netlify Drop, GitHub Pages, vlastní hosting).
+  2) Otevři odkaz v mobilu, připoj Bluetooth repráček a ťukni na "Zapnout".
+  3) Přes "Sdílet -> Přidat na plochu" ji máš jako ikonu.
+
+Otevřít index.html přímo ze souboru v mobilu taky půjde, ale některé věci
+(obrazovka zůstane svítit, ikona na ploše) fungují jen přes https.
+
+Své odkazy na alerty změníš přímo v appce (tlačítko Odebrat / pole Přidat),
+nebo v index.html v části DEFAULT_SOURCES.

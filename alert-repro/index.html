@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Alert Repro — zvuky stream alertů na mobilu</title>
+<meta name="description" content="Přehrává alerty z LootElement a StreamElements na mobilu přes Bluetooth repráček." />
+<meta name="theme-color" content="#121216" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Alerty" />
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;700&display=swap" />
+<style>
+  :root {
+    --bg: oklch(0.165 0.008 285);
+    --fg: oklch(0.96 0.01 80);
+    --surface: oklch(0.205 0.01 285);
+    --surface-raised: oklch(0.245 0.012 285);
+    --muted: oklch(0.24 0.01 285);
+    --muted-fg: oklch(0.68 0.015 285);
+    --primary: oklch(0.68 0.21 30);
+    --primary-fg: oklch(0.16 0.01 285);
+    --live: oklch(0.78 0.19 150);
+    --danger: oklch(0.62 0.22 25);
+    --border: oklch(1 0 0 / 9%);
+    --input: oklch(1 0 0 / 14%);
+    --glow: 0 0 0 1px oklch(0.68 0.21 30 / 40%), 0 12px 40px -8px oklch(0.68 0.21 30 / 55%);
+    --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: var(--display);
+    background: var(--bg) radial-gradient(120% 80% at 50% 0%, oklch(0.68 0.21 30 / 28%) 0%, transparent 60%) no-repeat fixed;
+    color: var(--fg);
+    min-height: 100dvh;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 0; background: none; }
+  main {
+    max-width: 28rem; margin: 0 auto; min-height: 100dvh;
+    display: flex; flex-direction: column; gap: 1.5rem;
+    padding: max(1rem, env(safe-area-inset-top)) 1.25rem max(1.5rem, env(safe-area-inset-bottom));
+  }
+  .mono { font-family: var(--mono); font-size: .6875rem; letter-spacing: .14em; text-transform: uppercase; }
+  .muted { color: var(--muted-fg); }
+  .hidden { display: none !important; }
+
+  header { display: flex; align-items: center; justify-content: space-between; padding-top: .5rem; }
+  h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; }
+  .chip { border-radius: 999px; padding: .4rem .75rem; border: 1px solid var(--border); }
+  .chip.live { background: var(--live); color: var(--primary-fg); border-color: transparent; font-weight: 700; display: inline-flex; align-items: center; gap: .5rem; }
+  .chip.live::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--primary-fg); }
+
+  .hero { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; padding: 1.5rem 0; text-align: center; }
+  .ring { position: relative; width: 14rem; height: 14rem; display: flex; align-items: center; justify-content: center; }
+  .ring::before { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--primary); animation: breathe 2.6s ease-in-out infinite; }
+  .ring::after { content: ""; position: absolute; inset: 1.5rem; border-radius: 50%; border: 1px solid oklch(0.68 0.21 30 / 40%); }
+  .power {
+    position: relative; z-index: 1; width: 10rem; height: 10rem; border-radius: 50%;
+    background: var(--primary); color: var(--primary-fg); box-shadow: var(--glow);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem;
+    font-weight: 700; font-size: 1.125rem; transition: transform .15s;
+  }
+  .power:active { transform: scale(.95); }
+  .power:disabled { opacity: .4; }
+  .hero p { max-width: 20rem; font-size: .875rem; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .btn {
+    height: 3rem; border-radius: .75rem; padding: 0 1.25rem; font-size: 1rem;
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem; transition: transform .15s, filter .15s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+  .btn-onair { background: var(--primary); color: var(--primary-fg); box-shadow: var(--glow); font-weight: 700; letter-spacing: -0.01em; }
+  .btn-panel { background: var(--surface); border: 1px solid var(--border); }
+  .btn-panel:hover { background: var(--surface-raised); }
+  .btn-sm { height: 2rem; border-radius: .6rem; padding: 0 .75rem; font-size: .8125rem; }
+  .btn-ghost { color: var(--muted-fg); }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; }
+  .rows > * + * { border-top: 1px solid var(--border); }
+  .row { display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; }
+  .row svg { width: 1rem; height: 1rem; color: var(--muted-fg); flex-shrink: 0; }
+  .row .t { flex: 1; font-size: .875rem; font-weight: 500; }
+  .row .s { font-size: .75rem; color: var(--muted-fg); font-weight: 400; }
+  .ok { color: var(--live); }
+
+  /* switch */
+  .switch { position: relative; width: 2.5rem; height: 1.4rem; flex-shrink: 0; }
+  .switch input { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 1; margin: 0; }
+  .switch span { position: absolute; inset: 0; border-radius: 999px; background: var(--input); transition: background .2s; }
+  .switch span::after { content: ""; position: absolute; top: .15rem; left: .15rem; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: var(--fg); transition: transform .2s, background .2s; }
+  .switch input:checked + span { background: var(--primary); }
+  .switch input:checked + span::after { transform: translateX(1.1rem); background: var(--primary-fg); }
+
+  .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .75rem; }
+  .sources { list-style: none; display: flex; flex-direction: column; gap: .75rem; }
+  .source { padding: 1rem; }
+  .source-top { display: flex; align-items: center; gap: .75rem; }
+  .dot { width: .625rem; height: .625rem; border-radius: 50%; background: oklch(0.68 0.015 285 / 40%); flex-shrink: 0; }
+  .dot.on { background: var(--live); animation: pulse 1.8s ease-out infinite; }
+  .source-info { flex: 1; min-width: 0; }
+  .source-name { font-weight: 600; line-height: 1.2; }
+  .source-url { font-family: var(--mono); font-size: .75rem; color: var(--muted-fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .source-body { margin-top: .75rem; display: flex; flex-direction: column; gap: .5rem; }
+  .source-actions { margin-top: .75rem; display: flex; justify-content: flex-end; }
+
+  .frame { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: .75rem; border: 1px solid var(--border); background: var(--bg); }
+  .frame.collapsed { position: absolute; width: 1px; height: 1px; aspect-ratio: auto; opacity: 0; pointer-events: none; border: 0; }
+  .frame iframe { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; background: transparent; transform-origin: 0 0; color-scheme: normal; }
+  .frame .tag { position: absolute; left: .5rem; bottom: .5rem; padding: .25rem .5rem; border-radius: .4rem; background: oklch(0.165 0.008 285 / 80%); color: var(--muted-fg); pointer-events: none; }
+  .frame.collapsed .tag { display: none; }
+
+  form.add { border: 1px dashed var(--border); border-radius: 1rem; padding: 1rem; display: flex; flex-direction: column; gap: .5rem; margin-top: .75rem; }
+  form.add .line { display: flex; gap: .5rem; }
+  form.add input { flex: 1; height: 3rem; border-radius: .75rem; border: 1px solid var(--input); background: var(--bg); padding: 0 .75rem; font-family: var(--mono); font-size: .875rem; min-width: 0; }
+  form.add input:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+  .err { color: var(--danger); font-size: .875rem; }
+
+  .tips { background: oklch(0.24 0.01 285 / 60%); border-radius: 1rem; padding: 1rem; font-size: .875rem; color: var(--muted-fg); }
+  .tips h2 { color: var(--fg); margin-bottom: .5rem; }
+  .tips ul { padding-left: 1rem; display: flex; flex-direction: column; gap: .375rem; }
+
+  @keyframes breathe { 0%,100% { transform: scale(1); opacity: .55; } 50% { transform: scale(1.12); opacity: .15; } }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 oklch(0.78 0.19 150 / 60%); } 70% { box-shadow: 0 0 0 10px oklch(0.78 0.19 150 / 0%); } 100% { box-shadow: 0 0 0 0 transparent; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <p class="mono muted">Alert Repro</p>
+      <h1 id="title">Alerty do repráčku</h1>
+    </div>
+    <span id="status-chip" class="mono chip muted">Off</span>
+  </header>
+
+  <!-- vypnuto -->
+  <section id="idle" class="hero">
+    <div class="ring">
+      <button id="start" class="power" type="button">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></svg>
+        Zapnout
+      </button>
+    </div>
+    <p class="muted">Připoj Bluetooth repráček, nahlas mobil a ťukni na tlačítko. Zvuky alertů pak pojedou stejně jako v OBS.</p>
+  </section>
+
+  <!-- běží -->
+  <section id="live" class="hidden" style="display:flex;flex-direction:column;gap:.75rem">
+    <div class="grid2">
+      <button id="test" class="btn btn-onair" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+        Test zvuku
+      </button>
+      <button id="stop" class="btn btn-panel" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></svg>
+        Vypnout
+      </button>
+    </div>
+    <div class="panel rows">
+      <div class="row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+        <p class="t">Obrazovka zůstane svítit</p>
+        <span id="wake" class="mono muted">ne</span>
+      </div>
+      <div class="row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
+        <div class="t">Držet repráček vzhůru<div class="s">Neslyšitelný tón, aby repráček neusnul</div></div>
+        <label class="switch"><input id="keepalive" type="checkbox" checked aria-label="Držet repráček vzhůru" /><span></span></label>
+      </div>
+      <div class="row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        <p class="t">Ukázat náhled alertů</p>
+        <label class="switch"><input id="preview" type="checkbox" checked aria-label="Ukázat náhled" /><span></span></label>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2 class="mono muted">Zdroje alertů</h2>
+      <span id="count" class="mono muted"></span>
+    </div>
+    <ul id="sources" class="sources"></ul>
+    <form id="add" class="add">
+      <label for="new-url" class="mono muted">Přidat další odkaz (browser source z OBS)</label>
+      <div class="line">
+        <input id="new-url" inputmode="url" placeholder="https://…" autocomplete="off" />
+        <button class="btn btn-panel" type="submit" aria-label="Přidat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <p id="add-err" class="err hidden"></p>
+    </form>
+  </section>
+
+  <section class="tips">
+    <h2 class="mono">Tipy</h2>
+    <ul>
+      <li>Nech appku otevřenou a mobil nezamykej — v pozadí telefon zvuk ztlumí.</li>
+      <li>Na iPhonu vypni tichý režim (přepínač na boku).</li>
+      <li>Pošli si testovací alert ze StreamElements / LootElement a ověř, že hraje.</li>
+      <li>Přes „Sdílet → Přidat na plochu“ si appku dáš na plochu jako ikonu.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- zdroje ----------
+  const STORAGE_KEY = "alert-repro:sources:v1";
+  const DEFAULT_SOURCES = [
+    { id: "lootelement", name: "LootElement", url: "https://lootelement.com/overlay/_kGo92PkOD3Ch37VjWvwcEEZJwcV8FYzbyKRCSThxGo", enabled: true },
+    { id: "streamelements", name: "StreamElements", url: "https://streamelements.com/overlay/6af25e109b2168e53a24708d/qkFY-5rnLbyP6Y-8x8kY2KqrkowcItlp7YQGK5G4UgvX7PqV", enabled: true },
+  ];
+
+  function loadSources() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return DEFAULT_SOURCES.slice();
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return DEFAULT_SOURCES.slice();
+      return parsed.filter((s) => s && typeof s.url === "string" && typeof s.id === "string");
+    } catch { return DEFAULT_SOURCES.slice(); }
+  }
+  function saveSources() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(sources)); } catch {}
+  }
+  function normalizeUrl(input) {
+    const t = input.trim();
+    if (!t) return null;
+    try {
+      const u = new URL(t);
+      return u.protocol === "https:" || u.protocol === "http:" ? u.toString() : null;
+    } catch { return null; }
+  }
+  function guessName(url) {
+    try {
+      const host = new URL(url).hostname.replace(/^www\./, "");
+      const base = host.split(".")[0] || host;
+      return base.charAt(0).toUpperCase() + base.slice(1);
+    } catch { return "Alert"; }
+  }
+  const newId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()));
+
+  // ---------- zvuk ----------
+  let ctx = null, keep = null;
+  function getCtx() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return ctx;
+  }
+  async function unlockAudio() {
+    const c = getCtx();
+    if (c.state !== "running") await c.resume();
+    const src = c.createBufferSource();
+    src.buffer = c.createBuffer(1, 1, 22050);
+    src.connect(c.destination);
+    src.start(0);
+  }
+  function setKeepAlive(on) {
+    const c = getCtx();
+    if (on && !keep) {
+      const osc = c.createOscillator(), gain = c.createGain();
+      osc.type = "sine"; osc.frequency.value = 30; gain.gain.value = 0.002;
+      osc.connect(gain).connect(c.destination); osc.start();
+      keep = { osc, gain };
+    } else if (!on && keep) {
+      keep.osc.stop(); keep.osc.disconnect(); keep.gain.disconnect(); keep = null;
+    }
+  }
+  async function testChime() {
+    const c = getCtx();
+    if (c.state !== "running") await c.resume();
+    const now = c.currentTime;
+    [659.25, 830.61, 987.77].forEach((f, i) => {
+      const osc = c.createOscillator(), g = c.createGain();
+      osc.type = "triangle"; osc.frequency.value = f;
+      const t = now + i * 0.12;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.35, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+      osc.connect(g).connect(c.destination); osc.start(t); osc.stop(t + 0.65);
+    });
+  }
+
+  // ---------- obrazovka zapnutá ----------
+  let wakeLock = null;
+  async function requestWake() {
+    const el = document.getElementById("wake");
+    if (!("wakeLock" in navigator)) { el.textContent = "nepodporuje"; el.className = "mono muted"; return; }
+    try {
+      wakeLock = await navigator.wakeLock.request("screen");
+      el.textContent = "ano"; el.className = "mono ok";
+      wakeLock.addEventListener("release", () => { el.textContent = "ne"; el.className = "mono muted"; });
+    } catch { el.textContent = "ne"; el.className = "mono muted"; }
+  }
+  function releaseWake() { if (wakeLock) wakeLock.release().catch(() => {}); wakeLock = null; }
+
+  // ---------- stav + vykreslení ----------
+  let sources = loadSources();
+  let live = false;
+  let showPreview = true;
+  const $ = (id) => document.getElementById(id);
+
+  function makeFrame(s) {
+    const box = document.createElement("div");
+    box.className = "frame" + (showPreview ? "" : " collapsed");
+    const iframe = document.createElement("iframe");
+    iframe.src = s.url;
+    iframe.title = s.name;
+    iframe.allow = "autoplay; encrypted-media; fullscreen";
+    box.appendChild(iframe);
+    const tag = document.createElement("div");
+    tag.className = "mono tag"; tag.textContent = "náhled";
+    box.appendChild(tag);
+    const fit = () => {
+      const w = box.classList.contains("collapsed") ? 19.2 : box.clientWidth;
+      iframe.style.transform = "scale(" + (w / 1920) + ")";
+    };
+    new ResizeObserver(fit).observe(box);
+    box._fit = fit;
+    return box;
+  }
+
+  // Iframy se vytváří jen jednou na zdroj, aby přepínání náhledu nepřerušilo hrající alert.
+  const frames = new Map();
+
+  function render() {
+    $("idle").classList.toggle("hidden", live);
+    $("live").classList.toggle("hidden", !live);
+    $("add").classList.toggle("hidden", live);
+    $("title").textContent = live ? "Alerty běží" : "Alerty do repráčku";
+    const chip = $("status-chip");
+    chip.textContent = live ? "Live" : "Off";
+    chip.className = live ? "mono chip live" : "mono chip muted";
+    const enabled = sources.filter((s) => s.enabled).length;
+    $("count").textContent = enabled + "/" + sources.length + " zapnuto";
+    $("start").disabled = enabled === 0;
+
+    const list = $("sources");
+    const keepIds = new Set();
+    list.innerHTML = "";
+    sources.forEach((s) => {
+      const li = document.createElement("li");
+      li.className = "panel source";
+      li.innerHTML =
+        '<div class="source-top">' +
+          '<span class="dot' + (live && s.enabled ? " on" : "") + '"></span>' +
+          '<div class="source-info"><p class="source-name"></p><p class="source-url"></p></div>' +
+          '<label class="switch"><input type="checkbox" /><span></span></label>' +
+        "</div>";
+      li.querySelector(".source-name").textContent = s.name;
+      li.querySelector(".source-url").textContent = s.url.replace(/^https?:\/\//, "");
+      const sw = li.querySelector("input");
+      sw.checked = s.enabled;
+      sw.setAttribute("aria-label", "Zapnout " + s.name);
+      sw.addEventListener("change", () => { s.enabled = sw.checked; saveSources(); render(); });
+
+      if (live && s.enabled) {
+        keepIds.add(s.id);
+        let frame = frames.get(s.id);
+        if (!frame) { frame = makeFrame(s); frames.set(s.id, frame); }
+        frame.classList.toggle("collapsed", !showPreview);
+        const body = document.createElement("div");
+        body.className = "source-body";
+        body.appendChild(frame);
+        const reload = document.createElement("button");
+        reload.type = "button";
+        reload.className = "btn btn-panel btn-sm";
+        reload.style.alignSelf = "flex-start";
+        reload.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg> Znovu načíst';
+        reload.addEventListener("click", () => {
+          const fresh = makeFrame(s);
+          frame.replaceWith(fresh);
+          frames.set(s.id, fresh);
+          requestAnimationFrame(() => fresh._fit());
+        });
+        body.appendChild(reload);
+        li.appendChild(body);
+        requestAnimationFrame(() => frame._fit());
+      }
+
+      if (!live) {
+        const actions = document.createElement("div");
+        actions.className = "source-actions";
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "btn btn-ghost btn-sm";
+        del.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg> Odebrat';
+        del.addEventListener("click", () => { sources = sources.filter((x) => x.id !== s.id); saveSources(); render(); });
+        actions.appendChild(del);
+        li.appendChild(actions);
+      }
+      list.appendChild(li);
+    });
+    // zrušit iframy zdrojů, které se vypnuly
+    for (const id of [...frames.keys()]) if (!keepIds.has(id)) frames.delete(id);
+  }
+
+  // ---------- ovládání ----------
+  $("start").addEventListener("click", async () => {
+    try { await unlockAudio(); } catch {}
+    setKeepAlive($("keepalive").checked);
+    live = true;
+    render();
+    requestWake();
+  });
+  $("stop").addEventListener("click", () => {
+    setKeepAlive(false);
+    releaseWake();
+    live = false;
+    frames.clear();
+    render();
+  });
+  $("test").addEventListener("click", () => { testChime(); });
+  $("keepalive").addEventListener("change", (e) => { if (live) setKeepAlive(e.target.checked); });
+  $("preview").addEventListener("change", (e) => { showPreview = e.target.checked; render(); });
+
+  $("add").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = $("new-url"), err = $("add-err");
+    const url = normalizeUrl(input.value);
+    const fail = (msg) => { err.textContent = msg; err.classList.remove("hidden"); };
+    if (!url) return fail("Vlož celý odkaz začínající https://");
+    if (sources.some((s) => s.url === url)) return fail("Tenhle odkaz už v seznamu je.");
+    sources.push({ id: newId(), name: guessName(url), url, enabled: true });
+    saveSources();
+    input.value = "";
+    err.classList.add("hidden");
+    render();
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && live) {
+      if (ctx && ctx.state !== "running") ctx.resume().catch(() => {});
+      requestWake();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
