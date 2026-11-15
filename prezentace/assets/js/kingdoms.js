@@ -1,0 +1,18 @@
+(function(){
+var T={en:{k:['North Crown','Blue Lion','Emerald Oak','Ash Wolves'],w:'Wilderness',wd:'Unclaimed – free to claim.',c:'Contested border',cd:'Two kingdoms clash here – invasion target.',o:'Outpost',od:'Strategic King of the Hill zone.',s:'Capital (Nexus)',own:'Claimed land of ',run:'▶ Run simulation',again:'▶ Run again',live:'Outpost – in progress',wait:'Outpost – waiting',win:' wins the Outpost!'},
+cs:{k:['Severní Koruna','Modrý Lev','Smaragdový Dub','Popelaví Vlci'],w:'Divočina',wd:'Nezabrané – volné ke claimu.',c:'Sporná hranice',cd:'Střetávají se tu dvě království – cíl invazí.',o:'Outpost',od:'Strategická zóna King of the Hill.',s:'Hlavní základna (Nexus)',own:'Území království ',run:'▶ Spustit simulaci',again:'▶ Spustit znovu',live:'Outpost – probíhá',wait:'Outpost – čeká se',win:' vyhrává Outpost!'}};
+var C=['#c0392b','#2e6fd6','#27ae60','#7f8c8d'];
+document.querySelectorAll('.kx-map').forEach(function(m){var t=T[m.dataset.lang]||T.en,g=m.querySelector('.kx-grid'),inf=m.querySelector('.kx-info');
+var R=['AAAA..........','AAAAA....BBBB.','AASAAx..BBBBB.','AAAA.x..BBSBB.','.....xO..BBB..','...........x..','CCCC.....xDDDD','CCSCC....DDSDD','CCCCC.....DDD.','.CCC.......D..'];
+R.forEach(function(r){r.split('').forEach(function(ch){var b=document.createElement('button');b.type='button';var i='ABCD'.indexOf(ch),n,d;
+if(i>=0){b.style.setProperty('--c',C[i]);n=t.k[i];d=t.own+t.k[i]+'.'}else if(ch==='S'){var k=0;b.textContent='👑';n=t.s;d='';}else if(ch==='O'){b.style.setProperty('--c','#f1c40f');b.textContent='⚑';n=t.o;d=t.od}else if(ch==='x'){b.style.setProperty('--c','repeating-linear-gradient(45deg,#c0392b 0 4px,#2e6fd6 4px 8px)');b.style.background='repeating-linear-gradient(45deg,#8e2a20 0 4px,#444 4px 8px)';n=t.c;d=t.cd}else{n=t.w;d=t.wd}
+b.setAttribute('aria-label',n);b.onclick=function(){g.querySelectorAll('.sel').forEach(function(x){x.classList.remove('sel')});b.classList.add('sel');inf.innerHTML='<b></b><span></span>';inf.firstChild.textContent=n;inf.lastChild.textContent=d};g.appendChild(b)})});
+g.querySelectorAll('button').forEach(function(b){if(b.textContent==='👑'){var prev=b.previousSibling;b.style.setProperty('--c',prev?getComputedStyle(prev).getPropertyValue('--c'):C[0]);var idx=C.indexOf(b.style.getPropertyValue('--c').trim());b.onclick=(function(o){return function(){o();inf.lastChild.textContent=t.k[idx]||''}})(b.onclick)}});
+m.querySelector('.kx-legend').innerHTML=t.k.map(function(k,i){return '<span style="--c:'+C[i]+'">'+k+'</span>'}).join('')+'<span style="--c:#f1c40f">'+t.o+'</span><span style="--c:#8e2a20">'+t.c+'</span><span style="--c:#2f4a22">'+t.w+'</span>';});
+document.querySelectorAll('.kx-op').forEach(function(o){var t=T[o.dataset.lang]||T.en,btn=o.querySelector('.kx-op-btn'),ul=o.querySelector('.kx-op-list'),tm=o.querySelector('.kx-op-timer'),bar=o.querySelector('.kx-op-boss i'),lab=o.querySelector('.kx-op-boss span'),win=o.querySelector('.kx-op-win'),z=o.querySelector('.kx-op-zone'),run=false;
+function draw(s){ul.innerHTML=s.map(function(v,i){return '<li style="--c:'+C[i]+'"><span>'+t.k[i]+'</span><span>'+v+' s</span></li>'}).join('')}draw([0,0,0,0]);
+btn.onclick=function(){if(run)return;run=true;win.textContent='';var s=[0,0,0,0],left=300;lab.textContent=t.live;
+var iv=setInterval(function(){left-=3;var h=Math.random()<.2?-1:Math.floor(Math.random()*4);if(h>=0){s[h]+=3;z.style.setProperty('--z',C[h])}
+tm.textContent=('0'+Math.floor(left/60)).slice(-2)+':'+('0'+left%60).slice(-2);bar.style.width=(100-left/3)+'%';draw(s);
+if(left<=0){clearInterval(iv);run=false;var b=s.indexOf(Math.max.apply(null,s));win.textContent='🏆 '+t.k[b]+t.win;lab.textContent=t.wait;btn.textContent=t.again}},200)};});
+})();
