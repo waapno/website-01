@@ -1,0 +1,167 @@
+/* ==========================================================
+   WAAPNO — "Sweetheart" theme
+   Strong hands, soft heart: wine-red + blush rose + champagne
+   ========================================================== */
+:root{
+  --wine:#7A0F2E; --wine2:#4A0819; --rose:#FF5C8A; --blush:#FFB3C7; --petal:#FFD9E3;
+  --champ:#F4D6A0; --champ2:#E9B872;
+  --r:24px; --ease:cubic-bezier(.2,.9,.2,1); --spring:cubic-bezier(.34,1.56,.64,1);
+  --f-head:Anton,Impact,sans-serif; --f-body:Archivo,system-ui,sans-serif;
+  --f-serif:Fraunces,Georgia,serif; --f-script:"Pinyon Script",cursive;
+}
+[data-theme=dark]{
+  --bg:#0E0509; --bg2:#2A0A14; --fg:#FFF1F4; --mute:#C9A3AE;
+  --card:rgba(255,190,210,.05); --card2:rgba(255,92,138,.08);
+  --line:rgba(255,179,199,.16); --petal-rgb:255,150,180; --shadow:0 20px 50px -24px rgba(255,60,120,.55);
+}
+[data-theme=light]{
+  --bg:#FFF4F6; --bg2:#FFD6E1; --fg:#2A0712; --mute:#8A4D5E;
+  --card:rgba(255,255,255,.7); --card2:rgba(255,255,255,.85);
+  --line:rgba(122,15,46,.16); --petal-rgb:214,40,90; --shadow:0 20px 50px -24px rgba(122,15,46,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:var(--f-body);color:var(--fg);
+  background:
+    radial-gradient(60% 40% at 15% 10%,color-mix(in oklab,var(--rose) 22%,transparent),transparent 70%),
+    radial-gradient(50% 40% at 90% 30%,color-mix(in oklab,var(--wine) 35%,transparent),transparent 70%),
+    radial-gradient(120% 80% at 50% -10%,var(--bg2),var(--bg) 62%);
+  background-attachment:fixed;overflow-x:hidden;transition:background .6s,color .6s;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--rose);color:#fff}
+#petals{position:fixed;inset:0;z-index:0;pointer-events:none}
+.grain{position:fixed;inset:-50%;z-index:0;pointer-events:none;opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 1.2s steps(4) infinite}
+@keyframes grain{25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-1%,3%)}}
+.glow{position:fixed;width:520px;height:520px;border-radius:50%;z-index:0;pointer-events:none;left:0;top:0;
+  background:radial-gradient(circle,color-mix(in oklab,var(--rose) 18%,transparent),transparent 65%);
+  transform:translate(-50%,-50%);transition:opacity .4s;mix-blend-mode:screen}
+[data-theme=light] .glow{mix-blend-mode:multiply;opacity:.6}
+
+.wrap{position:relative;z-index:1;max-width:580px;margin:0 auto;padding:22px 18px 70px}
+.top{display:flex;justify-content:space-between;gap:8px}.top>div{display:flex;gap:8px}
+.pill{text-decoration:none;display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--card);
+  color:var(--fg);backdrop-filter:blur(12px);border-radius:999px;padding:8px 14px;font:700 12px var(--f-body);
+  letter-spacing:.08em;cursor:pointer;transition:transform .25s var(--spring),border-color .25s,background .25s}
+.pill:hover{transform:translateY(-2px);border-color:var(--rose);background:var(--card2)}
+
+/* ---------- header ---------- */
+header{text-align:center;margin:30px 0 22px}
+.orb{position:relative;width:132px;height:132px;margin:30px auto 38px;cursor:pointer}
+.orb img,.orb .ph{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;object-fit:cover;
+  border:3px solid var(--blush);background:var(--wine);display:grid;place-items:center;font:44px var(--f-head);color:var(--blush);
+  box-shadow:0 0 0 6px color-mix(in oklab,var(--rose) 15%,transparent),0 18px 60px -10px var(--rose);
+  transition:transform .5s var(--spring)}
+.orb:hover img{transform:scale(1.04) rotate(-2deg)}
+.orb:active img{transform:scale(.94)}
+.orb .ring{position:absolute;inset:-34px;width:calc(100% + 68px);height:calc(100% + 68px);animation:spin 22s linear infinite;overflow:visible}
+.orb .ring text{font:600 italic 11px var(--f-serif);letter-spacing:.28em;fill:var(--blush);text-transform:uppercase}
+.heartbeat{position:absolute;z-index:2;right:-2px;bottom:4px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--rose),var(--wine));color:#fff;font-size:18px;border:2px solid var(--bg);
+  animation:beat 1.4s infinite;box-shadow:0 6px 18px -4px var(--rose)}
+@keyframes beat{0%,40%,100%{transform:scale(1)}15%{transform:scale(1.22)}30%{transform:scale(1.08)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.script{font:clamp(28px,7vw,40px)/1 var(--f-script);color:var(--blush);margin-bottom:-4px}
+.script.sm{font-size:26px}
+h1{font:clamp(52px,13vw,82px)/.9 var(--f-head);letter-spacing:.02em;text-transform:uppercase;
+  background:linear-gradient(180deg,var(--fg) 30%,var(--blush) 75%,var(--rose));-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 6px 30px color-mix(in oklab,var(--rose) 40%,transparent))}
+.tag{color:var(--mute);margin-top:10px;font:italic 400 16px var(--f-serif)}
+.tag.small{font:13px var(--f-body)}
+.badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.badge{display:inline-flex;align-items:center;gap:7px;font:800 11px var(--f-body);letter-spacing:.14em;
+  background:linear-gradient(135deg,var(--wine),var(--wine2));color:var(--petal);padding:7px 12px;border-radius:999px;border:1px solid color-mix(in oklab,var(--rose) 40%,transparent)}
+.badge.soft{background:var(--card);color:var(--fg);border-color:var(--line);backdrop-filter:blur(10px)}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--rose);box-shadow:0 0 10px var(--rose);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.3;transform:scale(.7)}}
+
+/* ---------- love note ---------- */
+.note{position:relative;margin:4px 0 22px;padding:20px 22px 16px 22px;border-radius:var(--r);
+  background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--line);backdrop-filter:blur(14px);text-align:center}
+.note::before{content:"";position:absolute;inset:6px;border-radius:calc(var(--r) - 6px);border:1px dashed var(--line);pointer-events:none}
+.note p{font:italic 400 18px/1.45 var(--f-serif);min-height:2.9em;transition:opacity .35s,transform .35s var(--ease)}
+.note p.out{opacity:0;transform:translateY(6px)}
+.seal{position:absolute;top:-16px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,var(--rose),var(--wine));color:var(--petal);font-size:16px;box-shadow:0 6px 16px -4px var(--wine)}
+.mini{margin-top:8px;border:0;background:none;color:var(--blush);font:700 11px var(--f-body);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;opacity:.8}
+.mini:hover{opacity:1;text-decoration:underline}
+
+/* ---------- mode switch ---------- */
+.mode{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:6px;border-radius:999px;background:var(--card);
+  border:1px solid var(--line);backdrop-filter:blur(14px);margin:6px 0 22px}
+.mode button{position:relative;z-index:1;border:0;background:none;color:var(--fg);font:22px var(--f-head);letter-spacing:.08em;padding:12px 0;cursor:pointer;transition:color .3s}
+.mode button small{display:block;font:600 10px var(--f-body);letter-spacing:.16em;opacity:.7}
+.mode button[aria-selected=true]{color:#fff}
+.mode .thumb{position:absolute;top:6px;bottom:6px;left:6px;width:calc(50% - 6px);border-radius:999px;
+  background:linear-gradient(135deg,var(--rose),var(--wine));box-shadow:0 10px 30px -8px var(--rose),inset 0 0 0 1px rgba(255,217,227,.45);
+  transition:transform .6s var(--spring)}
+.mode[data-m=irl] .thumb{transform:translateX(100%)}
+/* locked switch: gaming stays put, the other tab is just a lock */
+.mode.locked .thumb::after{content:"🔒";position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-size:12px;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+.mode button.nope{opacity:.42;cursor:not-allowed}
+.mode button.nope:hover{opacity:.55}
+.mode button.nope small::after{content:" 🔒";letter-spacing:0}
+.mode button.shake{animation:shake .45s var(--ease)}
+@keyframes shake{20%{transform:translateX(-6px)}45%{transform:translateX(6px)}70%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+
+/* ---------- cards ---------- */
+.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;perspective:1200px}
+.card{position:relative;display:block;text-decoration:none;color:inherit;border-radius:var(--r);transform-style:preserve-3d;
+  animation:rise .7s var(--ease) both;animation-delay:calc(var(--i)*70ms)}
+@keyframes rise{from{opacity:0;transform:translateY(26px) scale(.96)}}
+.face{position:relative;display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:15px 16px;border-radius:var(--r);
+  background:var(--card);border:1px solid var(--line);backdrop-filter:blur(14px);overflow:hidden;
+  transition:transform .4s var(--ease),border-color .3s,box-shadow .3s}
+.face::before{content:"";position:absolute;inset:0;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),color-mix(in oklab,var(--rose) 22%,transparent),transparent 60%);opacity:0;transition:opacity .3s}
+.face::after{content:"♥";position:absolute;right:-8px;bottom:-28px;font-size:90px;line-height:1;color:var(--rose);opacity:.05;transform:rotate(-14deg);transition:transform .6s var(--spring),opacity .4s}
+.card:hover .face{border-color:var(--blush);box-shadow:var(--shadow)}
+.card:hover .face::before{opacity:1}
+.card:hover .face::after{opacity:.14;transform:rotate(-4deg) scale(1.1)}
+.card.feat .face{background:linear-gradient(135deg,color-mix(in oklab,var(--wine) 92%,transparent),color-mix(in oklab,var(--wine2) 94%,transparent));
+  border-color:color-mix(in oklab,var(--blush) 45%,transparent);color:var(--petal)}
+.card.feat .sub,.card.feat .meta{color:color-mix(in oklab,var(--petal) 80%,transparent)}
+.ico{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;
+  background:linear-gradient(140deg,var(--petal),var(--blush));color:var(--wine);box-shadow:inset 0 -3px 0 rgba(122,15,46,.15)}
+.ico svg{width:27px;height:27px}
+.nm{font:22px/1 var(--f-head);letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hd{font:italic 400 13px var(--f-serif);opacity:.8;text-transform:none;letter-spacing:0}
+.sub{color:var(--mute);font-size:13px;margin-top:5px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;color:var(--mute)}
+.meta span{font:700 10px var(--f-body);letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid currentColor;opacity:.8}
+.go{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--blush);color:var(--wine);transition:transform .4s var(--spring),background .3s}
+.card:hover .go{transform:scale(1.1);background:var(--rose);color:#fff}
+.go .h{display:none}.card:hover .go .a{display:none}.card:hover .go .h{display:block}
+.live{font:800 9px var(--f-body);letter-spacing:.14em;background:var(--rose);color:#fff;padding:3px 7px;border-radius:6px;animation:pulse 1.6s infinite}
+.portal{position:absolute;right:60px;top:10px;z-index:3;display:flex;align-items:center;gap:5px;border:1px dashed var(--blush);background:rgba(0,0,0,.2);
+  color:var(--blush);border-radius:999px;padding:4px 9px;font:800 10px var(--f-body);letter-spacing:.12em;cursor:pointer;transition:all .25s}
+.portal:hover{background:var(--blush);color:var(--wine);border-style:solid}
+.card.flip .face{animation:warp .7s var(--ease)}
+@keyframes warp{40%{transform:rotateY(90deg) scale(.96);filter:blur(2px) brightness(1.5)}}
+.sec{font:italic 600 20px var(--f-serif);color:var(--blush);margin:22px 4px 12px;display:flex;align-items:center;gap:10px}
+.sec::before{content:"♥";font-style:normal;font-size:12px;color:var(--rose)}
+.sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+/* ---------- send love ---------- */
+.love{display:flex;justify-content:center;margin-top:28px}
+.lovebtn{position:relative;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;padding:14px 22px 14px 16px;border-radius:999px;
+  background:linear-gradient(135deg,var(--rose),var(--wine));color:#fff;font:800 13px var(--f-body);letter-spacing:.12em;text-transform:uppercase;
+  box-shadow:0 14px 40px -12px var(--rose);transition:transform .3s var(--spring)}
+.lovebtn:hover{transform:translateY(-2px) scale(1.03)}
+.lovebtn:active{transform:scale(.95)}
+.lovebtn b{background:rgba(255,255,255,.18);padding:3px 9px;border-radius:999px;font-variant-numeric:tabular-nums}
+.lb-heart{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18);font-size:16px;animation:beat 1.4s infinite}
+
+footer{text-align:center;margin-top:36px;color:var(--mute);font-size:12px;letter-spacing:.08em;line-height:1.8}
+footer a{color:var(--blush);text-decoration:none}
+.toast{position:fixed;left:50%;bottom:24px;z-index:9;transform:translate(-50%,30px);opacity:0;pointer-events:none;
+  background:var(--wine2);color:var(--petal);border:1px solid color-mix(in oklab,var(--rose) 40%,transparent);padding:10px 16px;border-radius:999px;
+  font:italic 15px var(--f-serif);transition:all .45s var(--spring)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.burst{position:fixed;z-index:8;pointer-events:none;color:var(--rose);font-size:18px;will-change:transform,opacity;animation:fly 1.1s var(--ease) forwards}
+@keyframes fly{to{transform:translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(.4);opacity:0}}
+@media (hover:none){.glow{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
