@@ -31,7 +31,7 @@ var T={
      ring:"strong hands ♥ soft heart ♥ strong hands ♥ soft heart ♥",
      lockTip:"locked — gaming only",lockMsg:"this one's locked ♡ gaming only",
      thanks:["Got it. You just made my day ♡","Aww, right back at you ♥","Careful, I'm blushing over here","That one hit the heart ♡"],
-     q:["Real men say how they feel — and mean it.","Tough on the outside, poetry on the inside.","I'll carry the heavy stuff. You just carry the vibes.","Romance isn't dead. It just streams in English.","Hold the door, hold the hand, hold the chat together."]},
+     q:["Crazy lifestyle.","Tough on the outside, poetry on the inside.","I'll carry the heavy stuff. You just carry the vibes.","Romance isn't dead. It just streams in English.","Hold the door, hold the hand, hold the chat together."]},
  cz:{hello:"ahoj, zlato",tag:"streamy v angličtině · silné ruce, měkké srdce",badge:"STREAMY V ANGLIČTINĚ",soft:"BEZNADĚJNÝ ROMANTIK",
      gSub:"HLAVNÍ KANÁLY",iSub:"REÁLNÝ ŽIVOT",gSec:"Kde mě najdeš",iSec:"Můj reálný svět",portalTo:"IRL",portalBack:"MAIN",
      lang:"EN",ttl:"Waapno — Odkazy",visits:"návštěv",another:"další ♡",sendLove:"Pošli lásku",sign:"s láskou, Waapno",
