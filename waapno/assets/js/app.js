@@ -2,7 +2,7 @@
 (function(){
 "use strict";
 /* HOW TO EDIT: every card = { id, name, icon, main?, irl? } — see original notes. */
-/* LOCK: true = GAMING tab is locked in place, IRL can't be opened. Set false to unlock. */
+/* LOCK: true = IRL tab is locked in place, GAMING can't be opened. Set false to unlock. */
 var LOCKED=true;
 var I={
  yt:'<svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="5.5" width="19" height="13" rx="4" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 9.5 15 12l-4.5 2.5z" fill="currentColor"/></svg>',
@@ -29,14 +29,14 @@ var T={
      gSub:"MAIN CHANNELS",iSub:"REAL LIFE",gSec:"Where you'll find me",iSec:"My real-life world",portalTo:"IRL",portalBack:"MAIN",
      lang:"CZ",ttl:"Waapno — Links",visits:"visits",another:"another one ♡",sendLove:"Send love",sign:"with love, Waapno",
      ring:"strong hands ♥ soft heart ♥ strong hands ♥ soft heart ♥",
-     lockTip:"locked — gaming only",lockMsg:"this one's locked ♡ gaming only",
+     lockTip:"locked — IRL only",lockMsg:"this one's locked ♡ IRL only",
      thanks:["Got it. You just made my day ♡","Aww, right back at you ♥","Careful, I'm blushing over here","That one hit the heart ♡"],
      q:["Crazy lifestyle.","Tough on the outside, poetry on the inside.","I'll carry the heavy stuff. You just carry the vibes.","Romance isn't dead. It just streams in English.","Hold the door, hold the hand, hold the chat together."]},
  cz:{hello:"ahoj, zlato",tag:"streamy v angličtině · silné ruce, měkké srdce",badge:"STREAMY V ANGLIČTINĚ",soft:"BEZNADĚJNÝ ROMANTIK",
      gSub:"HLAVNÍ KANÁLY",iSub:"REÁLNÝ ŽIVOT",gSec:"Kde mě najdeš",iSec:"Můj reálný svět",portalTo:"IRL",portalBack:"MAIN",
      lang:"EN",ttl:"Waapno — Odkazy",visits:"návštěv",another:"další ♡",sendLove:"Pošli lásku",sign:"s láskou, Waapno",
      ring:"silné ruce ♥ měkké srdce ♥ silné ruce ♥ měkké srdce ♥",
-     lockTip:"zamčeno — jen gaming",lockMsg:"tenhle je zamčenej ♡ jen gaming",
+     lockTip:"zamčeno — jen IRL",lockMsg:"tenhle je zamčenej ♡ jen IRL",
      thanks:["Mám to. Udělal jsi mi den ♡","Aww, posílám zpátky ♥","Pozor, červenám se","Tohle trefilo srdce ♡"],
      q:["Pořádnej chlap řekne, co cítí — a myslí to vážně.","Zvenku drsňák, uvnitř poezie.","Těžký věci unesu já. Ty nes jen dobrou náladu.","Romantika neumřela. Jen streamuje anglicky.","Podržet dveře, podržet ruku, podržet chat pohromadě."]}
 };
@@ -44,7 +44,7 @@ var S={lang:"en",mode:"gaming",flipped:{},qi:0};
 try{var qs=new URLSearchParams(location.search);S.lang=qs.get("lang")==="cz"?"cz":(localStorage.getItem("sip-lang")||"en");
  S.mode=(qs.get("mode")||location.hash.slice(1))==="irl"?"irl":"gaming";
  document.documentElement.dataset.theme=localStorage.getItem("sip-theme")||"dark";}catch(e){}
-if(LOCKED){S.mode="gaming";if(location.hash==="#irl")history.replaceState(null,"","#gaming");}
+if(LOCKED){S.mode="irl";if(location.hash==="#gaming")history.replaceState(null,"","#irl");}
 
 var $=function(s){return document.querySelector(s)},list=$("#list");
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return"&#"+c.charCodeAt(0)+";"})}
