@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Booster Calendar – When to Grind</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f5f6f8;--card:#fff;--tx:#1d2330;--mu:#667085;--bd:#e2e5ea;--mine:#8a6a2f;--xp:#7a4fd0;--farm:#2f9a4a;--mob:#d9561f;--travel:#2a7fd4;--war:#c62a47}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13161c;--card:#1c212b;--tx:#e8ebf1;--mu:#9aa3b2;--bd:#2c3340;--mine:#d3a85a;--xp:#a98aff;--farm:#5cc774;--mob:#ff8a55;--travel:#6db2ff;--war:#ff6b84}}
+:root[data-theme="dark"]{--bg:#13161c;--card:#1c212b;--tx:#e8ebf1;--mu:#9aa3b2;--bd:#2c3340;--mine:#d3a85a;--xp:#a98aff;--farm:#5cc774;--mob:#ff8a55;--travel:#6db2ff;--war:#ff6b84}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px}
+main{max-width:1200px;margin:0 auto}h1{font-size:1.5rem;margin:.2em 0}.sub{color:var(--mu);margin:0 0 16px}
+.live{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:20px}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.box small{color:var(--mu);text-transform:uppercase;letter-spacing:.05em;font-size:.72rem}.box b{display:block;font-size:1.1rem;margin-top:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.day{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}.day.today{outline:2px solid var(--travel)}
+.day h2{margin:0 0 2px;font-size:1.05rem}.theme{color:var(--mu);font-size:.85rem;margin-bottom:8px}
+.ev{display:flex;gap:10px;padding:8px 8px 8px 10px;border-left:4px solid var(--c);border-radius:4px;margin-top:6px;background:color-mix(in srgb,var(--c) 9%,transparent)}
+.ev.now{background:color-mix(in srgb,var(--c) 28%,transparent)}.t{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.n{font-size:.92rem}.n i{font-style:normal;color:var(--mu);font-size:.8rem}
+.mine{--c:var(--mine)}.xp{--c:var(--xp)}.farm{--c:var(--farm)}.mob{--c:var(--mob)}.travel{--c:var(--travel)}.war{--c:var(--war)}
+.leg{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 16px;font-size:.85rem;color:var(--mu)}.leg span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c);margin-right:6px}
+footer{color:var(--mu);font-size:.82rem;margin-top:20px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.9rem}.top a{color:var(--travel);text-decoration:none;font-weight:600}.lang a{padding:4px 10px;border:1px solid var(--bd);border-radius:8px;margin-left:6px;color:var(--mu)}.lang a.act{background:var(--travel);color:#fff;border-color:var(--travel)}</style></head><body><main>
+<div class="top"><a href="https://siphcf.eu">← Back to siphcf.eu</a><span class="lang"><a href="booster-kalendar.html">CZ</a><a href="booster-kalendar-en.html" class="act">EN</a></span></div>
+<h1>⚡ Booster Calendar – When to Grind</h1>
+<p class="sub">All times are server time (Prague, CET/CEST). Events repeat every week – plan your day around what you are grinding.</p>
+<div class="leg"><span class="mine">Mining</span><span class="farm">Farming &amp; fishing</span><span class="mob">Mobs &amp; spawners</span><span class="xp">XP &amp; skills</span><span class="travel">Travel</span><span class="war">War</span></div>
+<div class="live"><div class="box"><small>Running now</small><b id="cur">…</b></div><div class="box"><small>Next event</small><b id="nxt">…</b></div></div>
+<div class="grid" id="g"></div>
+<footer>There is always at least a one-hour gap between events so players can buy their own boosters without overlap. Friday war-night events are intentionally mild (×1.2 damage, Regeneration I).<br><a href="https://siphcf.eu" style="color:var(--travel)">siphcf.eu</a></footer>
+</main><script>
+const D=[[["18:00", "MINING_SPEED", 30], ["19:30", "EXP_MULTIPLIER", 30], ["21:00", "NIGHT_VISION", 20]], [["18:00", "PLANT_GROWTH", 30], ["19:30", "FARMING_FORTUNE", 30], ["21:00", "HUNGER_SAVER", 20]], [["18:00", "MOB_DROP", 30], ["19:30", "SPAWNER_RATE", 20], ["21:00", "EXP_MULTIPLIER", 30]], [["18:00", "FISHING_LUCK", 30], ["19:30", "SPEED", 20], ["21:00", "NO_FALL_DAMAGE", 20]], [["18:00", "ARMOR_DURABILITY", 30], ["19:30", "REGENERATION", 20], ["21:00", "COMBAT_DAMAGE", 20]], [["15:00", "FISHING_LUCK", 30], ["17:00", "FARMING_FORTUNE", 30], ["19:30", "MOB_DROP", 30], ["21:00", "EXP_MULTIPLIER", 30]], [["15:00", "PLANT_GROWTH", 30], ["17:00", "MINING_SPEED", 30], ["19:30", "EXP_MULTIPLIER", 30], ["21:00", "ARMOR_DURABILITY", 30]]],L={"MINING_SPEED": ["Faster mining", "⛏️", "×1.5", "mine"], "EXP_MULTIPLIER": ["XP bonus (XP, skills)", "✨", "×1.5", "xp"], "NIGHT_VISION": ["Night vision – for caves", "🌙", "", "mine"], "PLANT_GROWTH": ["Faster crop growth", "🌱", "", "farm"], "FARMING_FORTUNE": ["Farming bonus", "🌾", "×1.5", "farm"], "HUNGER_SAVER": ["Slower hunger", "🍗", "×0.5", "farm"], "MOB_DROP": ["Mob drop bonus", "💀", "×1.5", "mob"], "SPAWNER_RATE": ["Faster spawners", "🌀", "×1.5", "mob"], "FISHING_LUCK": ["Fishing luck", "🎣", "×1.5", "farm"], "SPEED": ["Speed – travel", "💨", "I", "travel"], "NO_FALL_DAMAGE": ["No fall damage", "🪂", "", "travel"], "ARMOR_DURABILITY": ["Slower armor wear", "🛡️", "×0.5", "war"], "REGENERATION": ["Regeneration – war", "❤️", "I", "war"], "COMBAT_DAMAGE": ["Combat damage bonus", "⚔️", "×1.2", "war"]},N=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],TH=["Mining & XP","Farming","Hunting & spawners","Fishing & travel","War night","Big Saturday","Chill Sunday"];
+const mm=t=>{const[a,b]=t.split(":");return +a*60+ +b},hh=m=>String(Math.floor(m/60)%24).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+const all=[];D.forEach((d,i)=>d.forEach(([t,ty,du])=>all.push({i,s:i*1440+mm(t),e:i*1440+mm(t)+du,ty})));
+function now(){const p=Object.fromEntries(new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Prague",weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+return{d:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].indexOf(p.weekday),m:(+p.hour%24)*60+ +p.minute}}
+const nm=e=>L[e.ty][1]+" "+L[e.ty][0]+(L[e.ty][2]?" "+L[e.ty][2]:"");
+function dur(x){return x>=60?Math.floor(x/60)+" h "+(x%60)+" min":x+" min"}
+function upd(){const n=now(),w=n.d*1440+n.m;
+ const c=all.find(e=>w>=e.s&&w<e.e);
+ document.getElementById("cur").textContent=c?nm(c)+" – "+dur(c.e-w)+" left":"No event – a good time to use your own boosters";
+ let x=all.filter(e=>e.s>w).sort((a,b)=>a.s-b.s)[0],add=0;if(!x){x=all[0];add=10080}
+ document.getElementById("nxt").textContent=nm(x)+" – in "+dur(x.s+add-w)+" ("+N[x.i].slice(0,3)+" "+hh(x.s%1440)+")";
+ document.querySelectorAll(".ev").forEach(el=>el.classList.toggle("now",!!c&&el.dataset.s==c.s));}
+document.getElementById("g").innerHTML=D.map((d,i)=>`<section class="day" id="d${i}"><h2>${N[i]}</h2><div class="theme">${TH[i]}</div>`+d.map(([t,ty,du])=>{const s=i*1440+mm(t);return `<div class="ev ${L[ty][3]}" data-s="${s}"><span class="t">${t}–${hh(mm(t)+du)}</span><span class="n">${nm({ty})}<br><i>${du} min</i></span></div>`}).join("")+`</section>`).join("");
+document.getElementById("d"+now().d).classList.add("today");upd();setInterval(upd,30000);
+</script></body></html>
