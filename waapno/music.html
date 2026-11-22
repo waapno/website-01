@@ -97,7 +97,7 @@ html,body{margin:0;height:100%;background:#070707;color:#fff;font-family:"Anton"
   </svg>
 
   <div class="stage"><div class="cards">
-    <a class="card" id="soundcloud" href="https://soundcloud.com/waapno" aria-label="SoundCloud" data-k="sc">
+    <a class="card" id="soundcloud" href="https://soundcloud.com/waapno" target="_blank" rel="noopener noreferrer" aria-label="SoundCloud" data-k="sc">
       <div class="shape"><div class="shine"></div></div><div class="rim"></div>
       <div class="in">
         <svg class="ico" viewBox="0 0 80 50" aria-hidden="true"><path d="M20 44h42a12 12 0 0 0 1-24 17 17 0 0 0-32-3 14 14 0 0 0-11 27z"/><path d="M8 26v10M13 22v14M18 25v11"/></svg>
@@ -106,7 +106,7 @@ html,body{margin:0;height:100%;background:#070707;color:#fff;font-family:"Anton"
       </div>
       <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     </a>
-    <a class="card" id="spotify" href="https://open.spotify.com/search/waapno" aria-label="Spotify" data-k="sp">
+    <a class="card" id="spotify" href="https://open.spotify.com/search/waapno" target="_blank" rel="noopener noreferrer" aria-label="Spotify" data-k="sp">
       <div class="shape"><div class="shine"></div></div><div class="rim"></div>
       <div class="in">
         <svg class="ico" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="26"/><path d="M15 22c11-3 23-2 31 3M17 32c9-2 18-1 25 3M19 41c7-2 14-1 19 2"/></svg>
@@ -125,11 +125,8 @@ html,body{margin:0;height:100%;background:#070707;color:#fff;font-family:"Anton"
 </section>
 <script>
 (function(){
-  /* ODKAZY DOPLŇ TADY */
-  var LINKS={soundcloud:"#",spotify:"#"};
   var music=document.getElementById("music"), roads=document.getElementById("roads"), grid=document.getElementById("grid"), flash=document.getElementById("flash");
   var cards=[].slice.call(document.querySelectorAll(".card")), sc=cards[0], sp=cards[1];
-  var URL={sc:LINKS.soundcloud, sp:LINKS.spotify};
   cards.forEach(function(c){
     var k=c.getAttribute("data-k");
     function on(){roads.setAttribute("class","roads "+k);} function off(){roads.setAttribute("class","roads");}
@@ -140,9 +137,7 @@ html,body{margin:0;height:100%;background:#070707;color:#fff;font-family:"Anton"
       c.style.setProperty("--ry",((x-.5)*16)+"deg"); c.style.setProperty("--rx",((.5-y)*12)+"deg");
       c.style.setProperty("--mx",(x*100)+"%"); c.style.setProperty("--my",(y*100)+"%");
     });
-    c.addEventListener("click",function(e){
-      e.preventDefault();
-      if(URL[k] && URL[k]!=="#"){ window.open(URL[k],"_blank","noopener"); }
+    c.addEventListener("click",function(){
       flash.classList.remove("on"); void flash.offsetWidth; flash.classList.add("on");
     });
     c.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();c.click();} });
