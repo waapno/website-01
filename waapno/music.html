@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Waapno – Music</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<style>
+:root{--red:#ff1744;--red2:#c4001f}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#070707;color:#fff;font-family:"Anton","Impact","Arial Narrow",sans-serif}
+/* ROZCESTNÍK – PRESTIGE */
+#music{display:block;position:fixed;inset:0;background:#070707;color:#fff;overflow:hidden;
+  padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);perspective:1400px}
+#fx{position:absolute;inset:0;width:100%;height:100%}
+.glow{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 55% at 50% 105%,rgba(255,23,68,.45),transparent 65%),
+  radial-gradient(ellipse 60% 40% at 50% 0%,rgba(255,23,68,.10),transparent 70%)}
+.grid{position:absolute;inset:-10%;pointer-events:none;opacity:.5;transform:translate(var(--px,0),var(--py,0));transition:transform .2s;
+  background:repeating-linear-gradient(115deg,transparent 0 58px,rgba(255,255,255,.035) 58px 60px)}
+.back{position:absolute;z-index:6;top:calc(18px + env(safe-area-inset-top,0px));left:22px;color:#fff;text-decoration:none;
+  font-size:17px;letter-spacing:.3em;opacity:.5;transition:.2s}
+.back:hover,.back:focus-visible{opacity:1;color:var(--red)}
+.title{position:absolute;z-index:3;top:calc(16px + env(safe-area-inset-top,0px));left:0;right:0;text-align:center;
+  font-size:clamp(22px,3.6vw,46px);letter-spacing:.55em;padding-left:.55em;
+  animation:drop .9s cubic-bezier(.2,.8,.2,1) both}
+.title i{font-style:normal;color:var(--red)}
+.stage{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6vh;
+  padding:clamp(70px,12vh,120px) 4vw 22vh}
+.cards{display:flex;gap:clamp(18px,4vw,70px);width:min(1180px,100%);justify-content:center;position:relative;z-index:3}
+@media (max-width:760px){.cards{flex-direction:column;align-items:center}.stage{padding-bottom:20vh}}
+.roads{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.roads path{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.r-base{stroke:#ff1744;stroke-width:12;opacity:.22;transition:.3s}
+.r-flow{stroke:#fff;stroke-width:3;stroke-dasharray:3 2.2;opacity:.65;animation:flow 1.2s linear infinite}
+.r-draw{stroke-dasharray:140;stroke-dashoffset:140;animation:draw 1.4s .3s cubic-bezier(.3,.7,.2,1) forwards}
+.roads.sc .rl .r-base,.roads.sp .rr .r-base{opacity:.9;stroke-width:18}
+.roads.sc .rr,.roads.sp .rl{opacity:.25}
+@keyframes flow{to{stroke-dashoffset:-5.2}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes drop{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(60px) skewX(-6deg)}to{opacity:1;transform:none}}
+
+.card{position:relative;flex:1 1 0;max-width:520px;min-width:260px;width:100%;aspect-ratio:16/10;display:block;color:#111;text-decoration:none;
+  cursor:pointer;outline:none;transform-style:preserve-3d;
+  transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateZ(0) scale(var(--s,1));
+  transition:transform .25s cubic-bezier(.2,.8,.2,1),filter .3s,opacity .3s;animation:rise 1s .5s cubic-bezier(.2,.8,.2,1) both}
+.card+.card{animation-delay:.7s}
+.card .shape{position:absolute;inset:0;clip-path:polygon(9% 0,100% 0,91% 100%,0 100%);
+  background:linear-gradient(135deg,#ff2a55,#ff1744 55%,#d1002a);overflow:hidden}
+.card .shape::before{content:"";position:absolute;top:0;bottom:0;right:0;width:26%;background:rgba(120,0,20,.55);clip-path:polygon(30% 0,100% 0,100% 100%,0 100%)}
+.card .shine{position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light;opacity:0;transition:opacity .3s;
+  background:radial-gradient(circle 260px at var(--mx,50%) var(--my,50%),#fff,transparent 70%)}
+.card:hover .shine,.card:focus-visible .shine{opacity:.9}
+.card .rim{position:absolute;inset:0;transform:translate(10px,10px) translateZ(-30px);clip-path:polygon(9% 0,100% 0,91% 100%,0 100%);background:rgba(255,255,255,.18);z-index:-1}
+.card .in{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 16% 0 14%;gap:1.2vmin;transform:translateZ(50px)}
+.card svg.ico{width:clamp(48px,6.2vw,84px);height:auto;fill:none;stroke:#111;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.card .name{font-family:"Anton","Impact",sans-serif;font-size:clamp(38px,5.6vw,84px);line-height:1;font-style:italic;letter-spacing:.02em;transform:skewX(-10deg);transform-origin:0 100%}
+.card .go{display:flex;align-items:center;gap:14px;font-size:clamp(15px,1.6vw,22px);letter-spacing:.35em;transform:skewX(-10deg);transform-origin:0 100%}
+.card .go b{display:block;width:clamp(30px,4vw,60px);height:4px;background:#111;position:relative;transition:width .3s}
+.card .go b::after{content:"";position:absolute;right:-2px;top:-6px;border-left:14px solid #111;border-top:8px solid transparent;border-bottom:8px solid transparent}
+.card:hover .go b,.card:focus-visible .go b{width:clamp(60px,9vw,130px)}
+.eq{position:absolute;right:15%;bottom:15%;display:flex;gap:5px;align-items:flex-end;height:34%;transform:translateZ(30px);opacity:.9}
+.eq i{display:block;width:7px;height:30%;background:#111;border-radius:2px;transform-origin:bottom;transition:height .3s}
+.card:hover .eq i,.card:focus-visible .eq i{animation:bar .7s ease-in-out infinite alternate}
+.eq i:nth-child(2){animation-delay:-.2s!important}.eq i:nth-child(3){animation-delay:-.45s!important}
+.eq i:nth-child(4){animation-delay:-.1s!important}.eq i:nth-child(5){animation-delay:-.35s!important}
+@keyframes bar{from{height:18%}to{height:100%}}
+.cards:has(.card:hover) .card:not(:hover),.cards:has(.card:focus-visible) .card:not(:focus-visible){filter:grayscale(.85) brightness(.5);--s:.94}
+.card:hover,.card:focus-visible{--s:1.06;filter:drop-shadow(0 0 40px rgba(255,23,68,.85))}
+
+.hub{position:absolute;z-index:4;left:50%;bottom:calc(5vh + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  width:clamp(110px,16vmin,170px);aspect-ratio:1;animation:rise 1s .2s both}
+.hub svg{width:100%;height:100%;overflow:visible}
+.hub .ring{fill:#111;stroke:#ff1744;stroke-width:5}
+.hub .orbit{fill:none;stroke:#fff;stroke-width:1.5;stroke-dasharray:3 9;opacity:.7;transform-origin:50% 50%;animation:spin 14s linear infinite}
+.hub .pulse{fill:none;stroke:#ff1744;stroke-width:2;transform-origin:50% 50%;animation:pls 2.8s ease-out infinite}
+.hub text{font-family:"Anton","Impact",sans-serif;fill:#ff1744;text-anchor:middle;font-style:italic;font-size:62px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pls{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.9)}}
+
+.flash{position:absolute;inset:0;z-index:9;background:#ff1744;pointer-events:none;opacity:0;clip-path:polygon(0 0,0 0,-20% 100%,-20% 100%)}
+.flash.on{animation:wipe .7s cubic-bezier(.7,0,.3,1) forwards}
+@keyframes wipe{0%{opacity:1;clip-path:polygon(0 0,0 0,-20% 100%,-20% 100%)}55%{opacity:1;clip-path:polygon(0 0,130% 0,110% 100%,-20% 100%)}100%{opacity:0;clip-path:polygon(0 0,130% 0,110% 100%,-20% 100%)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<section id="music" aria-label="Rozcestník hudby">
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div class="glow"></div><div class="grid" id="grid"></div>
+  <div class="title">VYBER <i>SVOJI</i> CESTU</div>
+
+  <svg class="roads" id="roads" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <g class="rl"><path class="r-base r-draw" d="M50 88 C50 66 26 70 26 46"/><path class="r-flow" d="M50 88 C50 66 26 70 26 46"/></g>
+    <g class="rr"><path class="r-base r-draw" d="M50 88 C50 66 74 70 74 46"/><path class="r-flow" d="M50 88 C50 66 74 70 74 46"/></g>
+  </svg>
+
+  <div class="stage"><div class="cards">
+    <a class="card" id="soundcloud" href="https://soundcloud.com/waapno" aria-label="SoundCloud" data-k="sc">
+      <div class="shape"><div class="shine"></div></div><div class="rim"></div>
+      <div class="in">
+        <svg class="ico" viewBox="0 0 80 50" aria-hidden="true"><path d="M20 44h42a12 12 0 0 0 1-24 17 17 0 0 0-32-3 14 14 0 0 0-11 27z"/><path d="M8 26v10M13 22v14M18 25v11"/></svg>
+        <div class="name">SOUNDCLOUD</div>
+        <div class="go">POSLOUCHAT<b></b></div>
+      </div>
+      <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    </a>
+    <a class="card" id="spotify" href="https://open.spotify.com/search/waapno" aria-label="Spotify" data-k="sp">
+      <div class="shape"><div class="shine"></div></div><div class="rim"></div>
+      <div class="in">
+        <svg class="ico" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="26"/><path d="M15 22c11-3 23-2 31 3M17 32c9-2 18-1 25 3M19 41c7-2 14-1 19 2"/></svg>
+        <div class="name">SPOTIFY</div>
+        <div class="go">POSLOUCHAT<b></b></div>
+      </div>
+      <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    </a>
+  </div></div>
+
+  <div class="hub" aria-hidden="true">
+    <svg viewBox="0 0 120 120"><circle class="pulse" cx="60" cy="60" r="50"/><circle class="orbit" cx="60" cy="60" r="58"/>
+      <circle class="ring" cx="60" cy="60" r="50"/><text x="60" y="82">W</text></svg>
+  </div>
+  <div class="flash" id="flash"></div>
+</section>
+<script>
+(function(){
+  /* ODKAZY DOPLŇ TADY */
+  var LINKS={soundcloud:"#",spotify:"#"};
+  var music=document.getElementById("music"), roads=document.getElementById("roads"), grid=document.getElementById("grid"), flash=document.getElementById("flash");
+  var cards=[].slice.call(document.querySelectorAll(".card")), sc=cards[0], sp=cards[1];
+  var URL={sc:LINKS.soundcloud, sp:LINKS.spotify};
+  cards.forEach(function(c){
+    var k=c.getAttribute("data-k");
+    function on(){roads.setAttribute("class","roads "+k);} function off(){roads.setAttribute("class","roads");}
+    c.addEventListener("pointerenter",on); c.addEventListener("pointerleave",function(){off();c.style.setProperty("--rx","0deg");c.style.setProperty("--ry","0deg");});
+    c.addEventListener("focus",on); c.addEventListener("blur",off);
+    c.addEventListener("pointermove",function(e){
+      var r=c.getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+      c.style.setProperty("--ry",((x-.5)*16)+"deg"); c.style.setProperty("--rx",((.5-y)*12)+"deg");
+      c.style.setProperty("--mx",(x*100)+"%"); c.style.setProperty("--my",(y*100)+"%");
+    });
+    c.addEventListener("click",function(e){
+      e.preventDefault();
+      if(URL[k] && URL[k]!=="#"){ window.open(URL[k],"_blank","noopener"); }
+      flash.classList.remove("on"); void flash.offsetWidth; flash.classList.add("on");
+    });
+    c.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();c.click();} });
+  });
+  music.addEventListener("pointermove",function(e){
+    var x=(e.clientX/innerWidth-.5), y=(e.clientY/innerHeight-.5);
+    grid.style.setProperty("--px",(x*-40)+"px"); grid.style.setProperty("--py",(y*-30)+"px");
+  });
+  window.addEventListener("keydown",function(e){
+        if(e.key==="ArrowLeft")sc.focus(); if(e.key==="ArrowRight")sp.focus();
+  });
+
+  /* žhavé jiskry */
+  var cv=document.getElementById("fx"), cx=cv.getContext("2d"), P=[], raf=0, W=0, H=0;
+  function size(){var d=Math.min(devicePixelRatio||1,2);W=cv.width=innerWidth*d;H=cv.height=innerHeight*d;}
+  function spawn(init){return {x:Math.random()*W,y:init?Math.random()*H:H+10,r:(Math.random()*2.2+.6)*(W/1200+.6),v:Math.random()*.9+.25,d:Math.random()*2-1,a:Math.random()*.7+.2};}
+  function tick(){
+    cx.clearRect(0,0,W,H);
+    P.forEach(function(p,i){
+      p.y-=p.v*(H/700); p.x+=p.d*.4+Math.sin(p.y*.01+i)*.3;
+      if(p.y<-10) P[i]=spawn(false);
+      cx.beginPath(); cx.fillStyle="rgba(255,"+(40+Math.floor(p.a*80))+",80,"+(p.a*(p.y/H+.1))+")";
+      cx.arc(p.x,p.y,p.r,0,6.283); cx.fill();
+    });
+    raf=requestAnimationFrame(tick);
+  }
+  function start(){ size(); P=[]; for(var i=0;i<90;i++)P.push(spawn(true)); cancelAnimationFrame(raf);
+    if(!matchMedia("(prefers-reduced-motion:reduce)").matches) tick(); }
+  window.addEventListener("resize",function(){ start(); });
+
+  start();
+})();
+</script>
+</body>
+</html>
