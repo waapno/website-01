@@ -38,7 +38,7 @@ var T={
      ring:"silné ruce ♥ měkké srdce ♥ silné ruce ♥ měkké srdce ♥",
      lockTip:"zamčeno — jen IRL",lockMsg:"tenhle je zamčenej ♡ jen IRL",
      thanks:["Mám to. Udělal jsi mi den ♡","Aww, posílám zpátky ♥","Pozor, červenám se","Tohle trefilo srdce ♡"],
-     q:["Pořádnej chlap řekne, co cítí — a myslí to vážně.","Zvenku drsňák, uvnitř poezie.","Těžký věci unesu já. Ty nes jen dobrou náladu.","Romantika neumřela. Jen streamuje anglicky.","Podržet dveře, podržet ruku, podržet chat pohromadě."]}
+     q:["Crazy lifestyle.","Zvenku drsňák, uvnitř poezie.","Těžký věci unesu já. Ty nes jen dobrou náladu.","Romantika neumřela. Jen streamuje anglicky.","Podržet dveře, podržet ruku, podržet chat pohromadě."]}
 };
 var S={lang:"en",mode:"gaming",flipped:{},qi:0};
 try{var qs=new URLSearchParams(location.search);S.lang=qs.get("lang")==="cz"?"cz":(localStorage.getItem("sip-lang")||"en");
